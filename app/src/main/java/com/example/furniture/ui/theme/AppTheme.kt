@@ -28,6 +28,7 @@ data class AppColors(
     val secondary: Color,
     val error: Color,
     val mediumTitle: Color,
+    val appGray: Color,
 )
 
 data class AppTypography(
@@ -77,7 +78,8 @@ fun AppTheme(content: @Composable () -> Unit) {
         error = Color.Red,
         mediumTitle = Color(
             0xFF606060
-        )
+        ),
+        appGray = Color(0xFFE0E0E0)
     )
     val typography = AppTypography(
         largeTitle = TextStyle(

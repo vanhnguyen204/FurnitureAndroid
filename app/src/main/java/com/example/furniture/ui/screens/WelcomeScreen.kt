@@ -1,5 +1,6 @@
 package com.example.furniture.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -28,17 +29,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.furniture.R
 import com.example.furniture.components.ImageBackground
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
+import com.example.furniture.data.viewmodel.ProductViewModel
+import kotlinx.coroutines.launch
+import kotlin.math.log
 
 @Composable
 fun WelcomeScreen(navHostController: NavHostController) {
     val image: Int = R.drawable.background;
-    val navigationUtils = NavigationUtils();
+
     ImageBackground(
         image = image,
         modifier = Modifier.fillMaxSize(),
@@ -76,7 +82,8 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
             Button(
                 onClick = {
-                    navHostController.navigate(navigationUtils.login)
+                    navHostController.navigate(NavigationUtils.login)
+
                 },
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(

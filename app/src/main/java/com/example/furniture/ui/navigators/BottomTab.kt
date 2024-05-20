@@ -25,20 +25,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
+import androidx.navigation.navArgument
 import com.example.furniture.R
-import com.example.furniture.ui.screens.FavoriteScreen
+import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
 import com.example.furniture.ui.screens.ProductDetails
 import com.example.furniture.ui.screens.ProfileScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
+import com.google.gson.Gson
 
 data class TabBarItem(
     val title: String,
@@ -46,13 +48,15 @@ data class TabBarItem(
     val badgeAmount: Int? = null
 )
 
+val gson = Gson()
+
 @Composable
 fun BottomTab(navController: NavHostController = rememberNavController()) {
-    val navigationUtils = NavigationUtils();
-    val home = TabBarItem(navigationUtils.homeScreen, R.drawable.home)
-    val favorite = TabBarItem(navigationUtils.favorite, R.drawable.bookmark)
-    val notification = TabBarItem(navigationUtils.notification, R.drawable.bell, 2)
-    val profile = TabBarItem(navigationUtils.profile, R.drawable.user)
+
+    val home = TabBarItem(NavigationUtils.homeScreen, R.drawable.home)
+    val favorite = TabBarItem(NavigationUtils.favorite, R.drawable.bookmark)
+    val notification = TabBarItem(NavigationUtils.notification, R.drawable.bell, 2)
+    val profile = TabBarItem(NavigationUtils.profile, R.drawable.user)
     val tabBarItems = listOf(home, favorite, notification, profile)
     AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -61,7 +65,6 @@ fun BottomTab(navController: NavHostController = rememberNavController()) {
                 Box(modifier = Modifier.padding(it)) {
                     NestedBottomTab(
                         navController = navController,
-                        navigationUtils = navigationUtils
                     )
                 }
             }
@@ -71,37 +74,33 @@ fun BottomTab(navController: NavHostController = rememberNavController()) {
 }
 
 @Composable
-fun NestedBottomTab(navController: NavHostController, navigationUtils: NavigationUtils) {
+fun NestedBottomTab(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = navigationUtils.homeScreen,
+        startDestination = NavigationUtils.homeScreen,
 
         ) {
-        composable(navigationUtils.homeScreen) {
+        composable(NavigationUtils.homeScreen) {
+
             HomeScreen(navHostController = navController)
 
         }
-        composable(navigationUtils.favorite) {
+        composable(NavigationUtils.favorite) {
             FavoriteScreen()
         }
-        composable(navigationUtils.notification) {
+        composable(NavigationUtils.notification) {
             NotificationScreen()
         }
-        composable(navigationUtils.profile) {
+        composable(NavigationUtils.profile) {
             ProfileScreen()
         }
-       detailsNavGraph(navController)
-    }
-}
-fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
-    navigation(
-        route = NavigationUtils().productDetailsNest,
-        startDestination = NavigationUtils().productDetails
-    ) {
-        composable(route = NavigationUtils().productDetails) {
-           ProductDetails(navHostController = navController)
+        composable(
+            route = NavigationUtils.productDetails + "/{idProductItem}",
+            arguments = listOf(navArgument("idProductItem") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val idProductItem = backStackEntry.arguments?.getString("idProductItem")
+            ProductDetails(navHostController = navController, idProductItem)
         }
-
     }
 }
 
@@ -110,30 +109,39 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
-    NavigationBar(containerColor = Color.White) {
-        tabBarItems.forEachIndexed { index, tabBarItem ->
-            NavigationBarItem(
-                selected = selectedTabIndex == index,
-                onClick = {
-                    navController.navigate(tabBarItem.title)
-                    selectedTabIndex = index
-                },
-                icon = {
-                    TabBarIconView(
-                        icon = tabBarItem.icon,
-                        title = tabBarItem.title,
-                        badgeAmount = tabBarItem.badgeAmount
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Black,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color.White
-                )
-            )
+    val navBackStack by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStack?.destination
 
+    val bottomBarDestination = tabBarItems.any() {
+        it.title == currentDestination?.route
+    }
+    if (bottomBarDestination) {
+        NavigationBar(containerColor = Color.White) {
+            tabBarItems.forEachIndexed { index, tabBarItem ->
+                NavigationBarItem(
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        navController.navigate(tabBarItem.title)
+                        selectedTabIndex = index
+                    },
+                    icon = {
+                        TabBarIconView(
+                            icon = tabBarItem.icon,
+                            title = tabBarItem.title,
+                            badgeAmount = tabBarItem.badgeAmount
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Black,
+                        unselectedIconColor = Color.Gray,
+                        indicatorColor = Color.White
+                    )
+                )
+
+            }
         }
     }
+
 
 }
 

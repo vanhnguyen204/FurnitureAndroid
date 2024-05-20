@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.furniture.ui.navigators.NavigationComponent
-import com.example.furniture.ui.screens.WelcomeScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.ui.theme.FurnitureTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FurnitureTheme {
               AppTheme {
-                 NavigationComponent()
+                 NavigationComponent(navController = rememberNavController())
               }
             }
         }
@@ -31,6 +33,6 @@ class MainActivity : ComponentActivity() {
 fun GreetingPreview() {
     val image: Int = R.drawable.background;
     AppTheme {
-       NavigationComponent()
+       NavigationComponent(navController = rememberNavController())
     }
 }

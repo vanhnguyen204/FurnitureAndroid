@@ -6,16 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
@@ -32,22 +25,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.furniture.R
+import com.example.furniture.data.model.Product
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
+import com.example.furniture.utils.RetrofitUtils
+import com.google.gson.Gson
 
-data class ProductItem(
-    val name: String,
-    val price: Int,
-    val image: Int,
-    val description: String,
-)
+
 
 @Composable
-fun ListProduct(data: List<ProductItem>, navHostController: NavHostController) {
+fun ListProduct(data: List<Product>, navHostController: NavHostController) {
     val listState = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(
         state = listState,
@@ -58,27 +49,26 @@ fun ListProduct(data: List<ProductItem>, navHostController: NavHostController) {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalItemSpacing = 20.dp
     ) {
-        itemsIndexed(data) { index: Int, item: ProductItem ->
+        itemsIndexed(data) { index: Int, item: Product ->
             ProductItemShow(index = index, item = item, navHostController)
         }
     }
 
 }
-
+val gson = Gson();
 @Composable
-fun ProductItemShow(index: Int, item: ProductItem, navHostController: NavHostController) {
-    val navigationUtils = NavigationUtils();
+fun ProductItemShow(index: Int, item: Product, navHostController: NavHostController) {
+
     Column {
-        ImageBackground(
-            image = item.image,
-            modifier = Modifier
-                .clip(
-                    RoundedCornerShape(10.dp)
-                ),
-            modifierContainer = Modifier.fillMaxSize(),
-            imageScale = ContentScale.Fit,
-            contentAlignment = Alignment.BottomEnd
+
+        Box(
+            contentAlignment = Alignment.BottomEnd,
+            modifier = Modifier.clip(RoundedCornerShape(20.dp)).fillMaxSize(),
         ) {
+            AsyncImage(model = RetrofitUtils.BASE_URL + item.image,
+                contentDescription = "Product image ${index}",
+                contentScale = ContentScale.Fit ,
+                )
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -92,7 +82,7 @@ fun ProductItemShow(index: Int, item: ProductItem, navHostController: NavHostCon
                         .background(Color(0, 0, 0, 40))
                         .padding(5.dp)
                         .clickable {
-                            navHostController.navigate(navigationUtils.productDetails)
+                            navHostController.navigate(NavigationUtils.productDetails + "/" + item.id)
                         }
 
                 ) {
@@ -104,7 +94,9 @@ fun ProductItemShow(index: Int, item: ProductItem, navHostController: NavHostCon
                     )
                 }
             }
+
         }
+
 
         Text(
             text = item.name,
@@ -120,12 +112,12 @@ fun ProductItemShow(index: Int, item: ProductItem, navHostController: NavHostCon
 @Composable
 fun ListProductPreview() {
     AppTheme {
-        val navHostController = rememberNavController();
-        val item1 = ProductItem("Coffee Chair", 20, R.drawable.coffee_chair, "Description ...")
-        val item2 = ProductItem("Coffee Chair", 20, R.drawable.table, "Description ...")
-        val item3 = ProductItem("Coffee Chair", 20, R.drawable.table_desk, "Description ...")
-        val item4 = ProductItem("Coffee Chair", 20, R.drawable.lamp_product, "Description ...")
-        val listItem = listOf(item1, item2, item3, item4)
-        ListProduct(data = listItem, navHostController)
+//        val navHostController = rememberNavController();
+//        val item1 = Product("819dja","Coffee Chair", 20, R.drawable.coffee_chair, "Description ...")
+//        val item2 = Product("1231","Coffee Chair", 20, R.drawable.table, "Description ...")
+//        val item3 = Product("12311","Coffee Chair", 20, R.drawable.table_desk, "Description ...")
+//        val item4 = Product("12333","Coffee Chair", 20, R.drawable.lamp_product, "Description ...")
+//        val listItem = listOf(item1, item2, item3, item4)
+//        ListProduct(data = listItem, navHostController)
     }
 }

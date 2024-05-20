@@ -1,6 +1,7 @@
 package com.example.furniture.ui.screens.auth
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,7 @@ import com.example.furniture.R
 import com.example.furniture.ui.theme.AppFont
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
+import com.example.furniture.utils.Validate
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
@@ -65,6 +67,12 @@ fun LoginScreen(navHostController: NavHostController) {
         mutableStateOf("")
     }
     var passWord by remember {
+        mutableStateOf("")
+    }
+    var errorEmail by remember {
+        mutableStateOf("")
+    }
+    var errorPass by remember {
         mutableStateOf("")
     }
     Column(
@@ -143,15 +151,27 @@ fun LoginScreen(navHostController: NavHostController) {
                 value = email,
                 onValueChange = {
                     email = it
+                    errorEmail = Validate.validateEmail(it)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White,
                 )
             )
+            if (errorEmail.isNotEmpty()) {
+                Text(
+                    text = errorEmail, style = TextStyle(
+                        color = Color.Red
+                    ),
+                    modifier = Modifier.padding(top = 5.dp)
+                )
+            }
             Text(
-                text = "Password", style = TextStyle(
+                text = "Password",
+                style = TextStyle(
                     color = Color.Gray
                 ), modifier = Modifier.padding(top = 20.dp)
             )
@@ -159,6 +179,7 @@ fun LoginScreen(navHostController: NavHostController) {
                 value = passWord,
                 onValueChange = {
                     passWord = it
+                    errorPass = Validate.validatePassword(it)
                 },
                 visualTransformation = if (isShowPass) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
@@ -182,6 +203,14 @@ fun LoginScreen(navHostController: NavHostController) {
                     }
                 }
             )
+            if (errorPass.isNotEmpty()) {
+                Text(
+                    text = errorPass, style = TextStyle(
+                        color = Color.Red
+                    ),
+                    modifier = Modifier.padding(top = 5.dp)
+                )
+            }
             Text(
                 text = "Forgot password?",
                 modifier = Modifier
@@ -190,7 +219,14 @@ fun LoginScreen(navHostController: NavHostController) {
             )
             Button(
                 onClick = {
-                    navHostController.navigate(NavigationUtils().bottomTab)
+                    val checkEmail = Validate.validateEmail(email.trim());
+                    val checkPass = Validate.validatePassword(passWord.trim())
+                    if (checkEmail.isNotEmpty() || checkPass.isNotEmpty()) {
+                        errorEmail = checkEmail;
+                        errorPass = checkPass;
+                    } else {
+                        navHostController.navigate(NavigationUtils.bottomTab)
+                    }
                 },
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(
