@@ -69,6 +69,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.runtime.livedata) // Cập nhật phiên bản nếu cần
+    implementation(libs.androidx.lifecycle.livedata.ktx) // Cập nhật phiên bản nếu cần
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.navigation.compose)

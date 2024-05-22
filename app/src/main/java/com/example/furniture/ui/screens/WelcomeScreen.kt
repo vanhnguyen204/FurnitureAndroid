@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,15 +36,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.furniture.R
 import com.example.furniture.components.ImageBackground
+import com.example.furniture.constant.Storage
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
 import com.example.furniture.data.viewmodel.ProductViewModel
+import com.example.furniture.helper.SharedPreferencesHelper
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
 @Composable
 fun WelcomeScreen(navHostController: NavHostController) {
     val image: Int = R.drawable.background;
+    val context = LocalContext.current
+val sharedPreferences = SharedPreferencesHelper(context).getDataLocalStorage(Storage.TOKEN.toString(), "")
 
     ImageBackground(
         image = image,
@@ -82,7 +87,12 @@ fun WelcomeScreen(navHostController: NavHostController) {
 
             Button(
                 onClick = {
+                    if (sharedPreferences.equals("")){
+
                     navHostController.navigate(NavigationUtils.login)
+                    }else{
+                        navHostController.navigate(NavigationUtils.bottomTab)
+                    }
 
                 },
                 shape = RoundedCornerShape(4.dp),

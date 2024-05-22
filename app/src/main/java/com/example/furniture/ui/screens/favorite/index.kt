@@ -15,12 +15,14 @@ import com.example.furniture.R
 import com.example.furniture.components.Header
 import com.example.furniture.data.model.Product
 import com.example.furniture.data.viewmodel.FavoriteViewModel
+import com.example.furniture.helper.Console
 import com.example.furniture.ui.screens.favorite.components.ListFavorite
 import com.example.furniture.ui.theme.AppTheme
 
 @Composable
 fun FavoriteScreen(favoriteViewModel: FavoriteViewModel = hiltViewModel<FavoriteViewModel>()) {
     val favoriteProducts by favoriteViewModel.favoriteProducts.collectAsState()
+    Console().log("FAVORITE", favoriteProducts.size.toString())
     Column {
         Header(
             iconLeft = R.drawable.search_2,
@@ -37,19 +39,7 @@ fun FavoriteScreen(favoriteViewModel: FavoriteViewModel = hiltViewModel<Favorite
                 .fillMaxWidth()
                 .padding(10.dp)
         )
-        val product =
-            Product(
-                "1",
-                "Chair ",
-                30,
-                "/images/chair-product.png",
-                "Hello ae",
-                "chair",
-                "admin_test"
-            )
-
-        val products = listOf(product, product, product)
-        ListFavorite(data = products)
+        ListFavorite(data = favoriteProducts)
     }
 
 }

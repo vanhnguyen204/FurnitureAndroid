@@ -48,7 +48,6 @@ data class TabBarItem(
     val badgeAmount: Int? = null
 )
 
-val gson = Gson()
 
 @Composable
 fun BottomTab(navController: NavHostController = rememberNavController()) {
@@ -179,6 +178,6 @@ fun TabBarBadgeView(count: Int? = null) {
 @Composable
 fun BottomTabPreview() {
     AppTheme {
-
+BottomTab()
     }
 }
