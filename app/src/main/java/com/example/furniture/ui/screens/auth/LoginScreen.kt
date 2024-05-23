@@ -52,7 +52,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.furniture.R
 import com.example.furniture.components.DialogMessage
 import com.example.furniture.constant.Storage
-import com.example.furniture.data.model.User
+import com.example.furniture.data.model.response.User
 import com.example.furniture.data.viewmodel.AuthViewModel
 import com.example.furniture.helper.Console
 import com.example.furniture.helper.Resource
@@ -83,10 +83,6 @@ fun LoginScreen(
         titleColor = Color.Red,
         messageColor = Color.White
     )
-    LaunchedEffect(key1 = dialogMessageVisible) {
-        Console().log("LOG USE EFFECT", "VISIBLE${dialogMessageVisible}")
-
-    }
     val context = LocalContext.current
     val sharedPreferencesHelper = remember {
         SharedPreferencesHelper(context)
@@ -257,7 +253,7 @@ fun LoginScreen(
                         errorEmail = checkEmail
                         errorPass = checkPass
                     } else {
-                        val user: User = com.example.furniture.data.model.User(email, passWord)
+                        val user: User = User(email, passWord)
                         authViewModel.authLogin(user)
 
                     }

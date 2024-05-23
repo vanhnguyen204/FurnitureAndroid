@@ -36,11 +36,10 @@ import com.example.furniture.R
 import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
-import com.example.furniture.ui.screens.ProductDetails
+import com.example.furniture.ui.screens.product_details.ProductDetails
 import com.example.furniture.ui.screens.ProfileScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
-import com.google.gson.Gson
 
 data class TabBarItem(
     val title: String,
