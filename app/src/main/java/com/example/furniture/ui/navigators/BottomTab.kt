@@ -37,7 +37,8 @@ import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
 import com.example.furniture.ui.screens.product_details.ProductDetails
-import com.example.furniture.ui.screens.ProfileScreen
+import com.example.furniture.ui.screens.profile.ProfileScreen
+import com.example.furniture.ui.screens.shipping_address.ShippingAddressScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
 
@@ -90,7 +91,7 @@ fun NestedBottomTab(navController: NavHostController) {
             NotificationScreen()
         }
         composable(NavigationUtils.profile) {
-            ProfileScreen()
+            ProfileScreen(navController)
         }
         composable(
             route = NavigationUtils.productDetails + "/{idProductItem}",
@@ -98,6 +99,10 @@ fun NestedBottomTab(navController: NavHostController) {
         ) { backStackEntry ->
             val idProductItem = backStackEntry.arguments?.getString("idProductItem")
             ProductDetails(navHostController = navController, idProductItem)
+        }
+        
+        composable(route = NavigationUtils.shippingAddress) {
+            ShippingAddressScreen(navHostController = navController)
         }
     }
 }
@@ -138,6 +143,7 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
 
             }
         }
+
     }
 
 

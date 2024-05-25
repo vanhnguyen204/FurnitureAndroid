@@ -2,6 +2,7 @@ package com.example.furniture.components
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.furniture.R
 import com.example.furniture.ui.navigators.NavigationComponent
 import com.example.furniture.ui.theme.AppTheme
@@ -25,33 +28,56 @@ fun Header(
     iconLeft: Int?,
     iconRight: Int?,
     contentCenter: @Composable () -> Unit,
-    sizeIconLeft: Dp,
-    sizeIconRight: Dp,
-    iconLeftPress: () -> Unit,
-    iconRightPress: () -> Unit,
+    sizeIconLeft: Dp?,
+    sizeIconRight: Dp?,
+    iconLeftPress: () -> Unit?,
+    iconRightPress: () -> Unit?,
     modifier: Modifier
 ) {
-    Row (horizontalArrangement = Arrangement.SpaceBetween, modifier = modifier, verticalAlignment = Alignment.CenterVertically){
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         if (iconLeft != null) {
             Image(
-                modifier = Modifier.size(sizeIconLeft),
+                modifier = Modifier
+                    .size(sizeIconLeft ?: 30.dp)
+                    .clickable {
+                        iconLeftPress()
+                    },
                 painter = painterResource(id = iconLeft),
-                contentDescription = "Icon left header")
+                contentDescription = "Icon left header"
+            )
 
-        }else{
-            Text(text = "")
+        } else {
+            Text(
+                text = "", style = TextStyle(
+                    fontSize = 30.sp
+                )
+            )
         }
         contentCenter()
         if (iconRight != null) {
             Image(
-                modifier = Modifier.size(sizeIconRight),
+                modifier = Modifier
+                    .size(sizeIconRight ?: 30.dp)
+                    .clickable {
+                        iconRightPress()
+                    },
                 painter = painterResource(id = iconRight),
-                contentDescription = "Icon left header")
-        }else{
-            Text(text = "")
+                contentDescription = "Icon left header"
+            )
+        } else {
+            Text(
+                text = "", style = TextStyle(
+                    fontSize = 30.sp
+                )
+            )
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HeaderPreview() {
@@ -62,11 +88,15 @@ fun HeaderPreview() {
             iconRight = R.drawable.cart,
             contentCenter = {
                 Text(text = "Make")
-                /*TODO*/ },
+                /*TODO*/
+            },
             sizeIconLeft = 30.dp,
-            sizeIconRight =27.dp ,
+            sizeIconRight = 27.dp,
             iconLeftPress = { /*TODO*/ },
             iconRightPress = {},
-            modifier = Modifier.fillMaxWidth().padding(10.dp))
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        )
     }
 }

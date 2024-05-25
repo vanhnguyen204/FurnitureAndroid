@@ -42,7 +42,10 @@ data class AppTypography(
     val body1: TextStyle = TextStyle.Default,
     val body2: TextStyle = TextStyle.Default,
     val textProduct: TextStyle = TextStyle.Default,
-    val priceProduct: TextStyle = TextStyle.Default
+    val priceProduct: TextStyle = TextStyle.Default,
+    val text18Nunitosan: TextStyle = TextStyle.Default,
+    val text12Nunitosan: TextStyle = TextStyle.Default,
+    val titleHeaderStyle:  TextStyle = TextStyle.Default,
 )
 
 data class AppFont(
@@ -74,8 +77,8 @@ fun AppTheme(content: @Composable () -> Unit) {
         nunitoSanRegular = Font(R.font.nunitosan_regular)
     )
     val colors = AppColors(
-        primary = Color.White,
-        secondary = Color.Black,
+        primary = Color.Black,
+        secondary = Color(0xFF808080),
         error = Color.Red,
         mediumTitle = Color(
             0xFF606060
@@ -120,6 +123,26 @@ fun AppTheme(content: @Composable () -> Unit) {
             color = Color.Black,
             fontFamily = FontFamily(fonts.nunitoSanMedium),
             fontWeight = FontWeight(700)
+        ),
+        text18Nunitosan = TextStyle(
+            fontSize = 18.sp,
+            color = Color.Black,
+            fontFamily = FontFamily(fonts.nunitoSanMedium),
+            fontWeight = FontWeight(700)
+        ),
+        text12Nunitosan = TextStyle(
+            fontSize = 12.sp,
+            color = colors.secondary,
+            fontFamily = FontFamily(fonts.nunitoSanMedium),
+            fontWeight = FontWeight(400),
+            lineHeight = TextUnit(15f, TextUnitType(15L)),
+
+        ),
+        titleHeaderStyle = TextStyle(
+            fontSize = 18.sp,
+            fontWeight = FontWeight(700),
+            color = Color.Black,
+            fontFamily = FontFamily(fonts.nunitoSanRegular),
         )
     )
     CompositionLocalProvider(
