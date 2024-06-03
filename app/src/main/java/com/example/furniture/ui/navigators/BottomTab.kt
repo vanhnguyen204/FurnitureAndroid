@@ -33,14 +33,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.furniture.R
+import com.example.furniture.data.model.response.ShippingAddress
 import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
+import com.example.furniture.ui.screens.payment.Payment
+import com.example.furniture.ui.screens.shipping_address_management.ManageShippingAddress
 import com.example.furniture.ui.screens.product_details.ProductDetails
 import com.example.furniture.ui.screens.profile.ProfileScreen
 import com.example.furniture.ui.screens.shipping_address.ShippingAddressScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
+import com.google.gson.Gson
 
 data class TabBarItem(
     val title: String,
@@ -104,6 +108,24 @@ fun NestedBottomTab(navController: NavHostController) {
         composable(route = NavigationUtils.shippingAddress) {
             ShippingAddressScreen(navHostController = navController)
         }
+        composable(route = NavigationUtils.shippingAddressManage+"/{isCreate}/{shippingAddress}",
+            arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
+                navArgument("shippingAddress"){
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+
+            ) { backStackEntry ->
+            val shippingAddressJson = backStackEntry.arguments?.getString("shippingAddress")
+            val shippingAddress = Gson().fromJson(shippingAddressJson, ShippingAddress::class.java)
+            val isCreate = backStackEntry.arguments?.getBoolean("isCreate")
+            ManageShippingAddress(navHostController = navController, isCreate = isCreate ?: true, shippingAddress)
+        }
+
+        composable(route = NavigationUtils.payment){
+         Payment(navHostController = navController)
+        }
     }
 }
 
@@ -143,9 +165,7 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
 
             }
         }
-
     }
-
 
 }
 

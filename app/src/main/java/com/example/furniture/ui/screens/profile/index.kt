@@ -1,6 +1,7 @@
 package com.example.furniture.ui.screens.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,9 +32,11 @@ import com.example.furniture.utils.NavigationUtils
 fun ProfileScreen(navHostController: NavHostController) {
 //    val user by authViewModel.user.observeAsState()  authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
     val feat1 = ProfileItemFeatureProps(name = "My orders", "Already have 10 orders",){
+
+    }
+    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders"){
         navHostController.navigate(NavigationUtils.shippingAddress)
     }
-    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders", {})
     val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Already have 10 orders", {})
     val feat4 = ProfileItemFeatureProps(name = "My reviews", "Already have 10 orders", {})
     val feat5 = ProfileItemFeatureProps(name = "Setting", "Already have 10 orders", {})
@@ -41,6 +44,7 @@ fun ProfileScreen(navHostController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(AppTheme.appColors.tertiary)
             .padding(10.dp)
     ) {
         Header(

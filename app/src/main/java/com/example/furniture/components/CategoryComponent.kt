@@ -70,7 +70,7 @@ fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: ()
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .padding(5.dp),
+            .padding(horizontal = 15.dp, vertical = 20.dp),
     ) {
         Column(
             modifier = Modifier
@@ -79,7 +79,7 @@ fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: ()
                     shape = RoundedCornerShape(15.dp)
                 )
                 .clip(RoundedCornerShape(15.dp))
-                .padding(15.dp)
+                .padding(12.dp)
                 .clickable {
                     onItemSelected()
                 }
@@ -88,7 +88,7 @@ fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: ()
                 painter = painterResource(id = item.icon),
                 contentDescription = "Icon category",
                 modifier = Modifier
-                    .size(25.dp),
+                    .size(20.dp),
                 colorFilter = ColorFilter.tint(color = Color.White)
 
             )

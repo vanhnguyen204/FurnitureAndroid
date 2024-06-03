@@ -10,5 +10,9 @@ object NavigationUtils {
     const val bottomTab: String = "BOTTOM_TAB"
     const val productDetails: String = "PRODUCT_DETAILS_SCREEN"
     const val shippingAddress = "SHIPPING_ADDRESS_SCREEN"
+    const val shippingAddressManage = "SHIPPING_ADDRESS_MANAGEMENT_SCREEN"
+    const val payment = "PAYMENT_SCREEN"
+    const val paymentManagement = "PAYMENT_MANAGEMENT_SCREEN"
+
 
 }

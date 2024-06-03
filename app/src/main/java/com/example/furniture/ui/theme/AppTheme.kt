@@ -30,6 +30,7 @@ data class AppColors(
     val mediumTitle: Color,
     val appGray: Color,
     val appBrown: Color,
+    val tertiary: Color
 )
 
 data class AppTypography(
@@ -84,7 +85,8 @@ fun AppTheme(content: @Composable () -> Unit) {
             0xFF606060
         ),
         appGray = Color(0xFFE0E0E0),
-        appBrown = Color(0xFF937350)
+        appBrown = Color(0xFF937350),
+        tertiary = Color(0xFFF2F2F2)
     )
     val typography = AppTypography(
         largeTitle = TextStyle(
@@ -127,7 +129,7 @@ fun AppTheme(content: @Composable () -> Unit) {
         text18Nunitosan = TextStyle(
             fontSize = 18.sp,
             color = Color.Black,
-            fontFamily = FontFamily(fonts.nunitoSanMedium),
+            fontFamily = FontFamily(fonts.nunitoSanRegular),
             fontWeight = FontWeight(700)
         ),
         text12Nunitosan = TextStyle(
