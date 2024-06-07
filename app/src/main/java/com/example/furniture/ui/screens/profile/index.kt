@@ -37,7 +37,9 @@ fun ProfileScreen(navHostController: NavHostController) {
     val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders"){
         navHostController.navigate(NavigationUtils.shippingAddress)
     }
-    val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Already have 10 orders", {})
+    val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Already have 10 payments") {
+        navHostController.navigate(NavigationUtils.payment)
+    }
     val feat4 = ProfileItemFeatureProps(name = "My reviews", "Already have 10 orders", {})
     val feat5 = ProfileItemFeatureProps(name = "Setting", "Already have 10 orders", {})
     val feats = listOf(feat1, feat2, feat3, feat4, feat5)

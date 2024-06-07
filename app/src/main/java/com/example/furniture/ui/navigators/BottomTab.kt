@@ -33,11 +33,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.furniture.R
+import com.example.furniture.data.model.response.Payment
 import com.example.furniture.data.model.response.ShippingAddress
 import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
+import com.example.furniture.ui.screens.cart.CartScreen
 import com.example.furniture.ui.screens.payment.Payment
+import com.example.furniture.ui.screens.payment_management.PaymentManagement
 import com.example.furniture.ui.screens.shipping_address_management.ManageShippingAddress
 import com.example.furniture.ui.screens.product_details.ProductDetails
 import com.example.furniture.ui.screens.profile.ProfileScreen
@@ -104,27 +107,45 @@ fun NestedBottomTab(navController: NavHostController) {
             val idProductItem = backStackEntry.arguments?.getString("idProductItem")
             ProductDetails(navHostController = navController, idProductItem)
         }
-        
+
         composable(route = NavigationUtils.shippingAddress) {
             ShippingAddressScreen(navHostController = navController)
         }
-        composable(route = NavigationUtils.shippingAddressManage+"/{isCreate}/{shippingAddress}",
+        composable(route = NavigationUtils.shippingAddressManage + "/{isCreate}/{shippingAddress}",
             arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
-                navArgument("shippingAddress"){
+                navArgument("shippingAddress") {
                     type = NavType.StringType
                     nullable = true
                 }
             )
 
-            ) { backStackEntry ->
+        ) { backStackEntry ->
             val shippingAddressJson = backStackEntry.arguments?.getString("shippingAddress")
             val shippingAddress = Gson().fromJson(shippingAddressJson, ShippingAddress::class.java)
             val isCreate = backStackEntry.arguments?.getBoolean("isCreate")
-            ManageShippingAddress(navHostController = navController, isCreate = isCreate ?: true, shippingAddress)
+            ManageShippingAddress(
+                navHostController = navController,
+                isCreate = isCreate ?: true,
+                shippingAddress
+            )
         }
 
-        composable(route = NavigationUtils.payment){
-         Payment(navHostController = navController)
+        composable(route = NavigationUtils.payment) {
+            Payment(navHostController = navController)
+        }
+        composable(route = NavigationUtils.paymentManagement + "/{isCreate}/{payment}",  arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
+            navArgument("shippingAddress") {
+                type = NavType.StringType
+                nullable = true
+            }
+        )) { backStackEntry ->
+            val paymentJson = backStackEntry.arguments?.getString("payment")
+            val payment = Gson().fromJson(paymentJson, Payment::class.java)
+            val isCreate = backStackEntry.arguments?.getBoolean("isCreate")
+            PaymentManagement(navHostController = navController, payment = payment, isCreate = isCreate ?: true)
+        }
+        composable(route = NavigationUtils.cart){
+            CartScreen(navController = navController)
         }
     }
 }
@@ -203,6 +224,6 @@ fun TabBarBadgeView(count: Int? = null) {
 @Composable
 fun BottomTabPreview() {
     AppTheme {
-BottomTab()
+        BottomTab()
     }
 }

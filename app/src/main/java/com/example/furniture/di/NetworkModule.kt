@@ -4,14 +4,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.furniture.data.repository.AuthRepositoryImpl
 import com.example.furniture.data.repository.FavoriteRepositoryImpl
+import com.example.furniture.data.repository.PaymentRepositoryImpl
 import com.example.furniture.data.repository.ProductRepositoryImpl
 import com.example.furniture.data.repository.ShippingAddressRepositoryImpl
 import com.example.furniture.domain.repository.AuthRepository
 import com.example.furniture.domain.repository.FavoriteRepository
+import com.example.furniture.domain.repository.PaymentRepository
 import com.example.furniture.domain.repository.ProductRepository
 import com.example.furniture.domain.repository.ShippingAddressRepository
 import com.example.furniture.services.AuthService
 import com.example.furniture.services.FavoriteService
+import com.example.furniture.services.PaymentService
 import com.example.furniture.services.ProductService
 import com.example.furniture.services.ShippingAddressService
 import com.example.furniture.utils.RetrofitUtils
@@ -101,4 +104,21 @@ object NetworkModule {
         return ShippingAddressRepositoryImpl(shippingAddressService, sharedPreferences)
     }
 
+    //PAYMENT METHOD
+    @Provides
+    @Singleton
+    fun providePaymentService(
+        retrofit: Retrofit
+    ): PaymentService{
+        return retrofit.create(PaymentService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePaymentRepository(
+        paymentService: PaymentService,
+        sharedPreferences: SharedPreferences
+    ): PaymentRepository {
+        return PaymentRepositoryImpl(sharedPreferences,paymentService)
+    }
 }

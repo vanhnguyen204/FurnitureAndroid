@@ -11,7 +11,7 @@ data class Payment(
     val expiryDate: String,
     val cvv: Int,
     val cartHolderName: String,
-    val isSelected: Boolean,
+    var isSelected: Boolean,
     val type: String,
     val bankName: String,
     val image: String,

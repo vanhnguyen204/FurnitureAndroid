@@ -13,6 +13,7 @@ object NavigationUtils {
     const val shippingAddressManage = "SHIPPING_ADDRESS_MANAGEMENT_SCREEN"
     const val payment = "PAYMENT_SCREEN"
     const val paymentManagement = "PAYMENT_MANAGEMENT_SCREEN"
+    const val cart  = "CART_SCREEN"
 
 
 }

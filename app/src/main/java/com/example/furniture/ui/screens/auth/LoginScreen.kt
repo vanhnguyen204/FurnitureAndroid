@@ -303,8 +303,6 @@ fun LoginScreen(
                     }
                 }
             }
-
-
             Button(
                 onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
