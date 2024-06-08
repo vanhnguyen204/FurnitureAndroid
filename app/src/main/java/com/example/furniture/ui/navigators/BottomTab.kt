@@ -33,12 +33,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.furniture.R
+import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.model.response.Payment
 import com.example.furniture.data.model.response.ShippingAddress
+import com.example.furniture.ui.screens.DonePurchase
 import com.example.furniture.ui.screens.favorite.FavoriteScreen
 import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
 import com.example.furniture.ui.screens.cart.CartScreen
+import com.example.furniture.ui.screens.checkout.Checkout
 import com.example.furniture.ui.screens.payment.Payment
 import com.example.furniture.ui.screens.payment_management.PaymentManagement
 import com.example.furniture.ui.screens.shipping_address_management.ManageShippingAddress
@@ -48,6 +51,7 @@ import com.example.furniture.ui.screens.shipping_address.ShippingAddressScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 data class TabBarItem(
     val title: String,
@@ -133,7 +137,8 @@ fun NestedBottomTab(navController: NavHostController) {
         composable(route = NavigationUtils.payment) {
             Payment(navHostController = navController)
         }
-        composable(route = NavigationUtils.paymentManagement + "/{isCreate}/{payment}",  arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
+        composable(route = NavigationUtils.paymentManagement + "/{isCreate}/{payment}",
+            arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
             navArgument("shippingAddress") {
                 type = NavType.StringType
                 nullable = true
@@ -146,6 +151,12 @@ fun NestedBottomTab(navController: NavHostController) {
         }
         composable(route = NavigationUtils.cart){
             CartScreen(navController = navController)
+        }
+        composable(route = NavigationUtils.checkout) {
+            Checkout(navController = navController)
+        }
+        composable(route = NavigationUtils.donePurchase) {
+            DonePurchase(navController = navController)
         }
     }
 }

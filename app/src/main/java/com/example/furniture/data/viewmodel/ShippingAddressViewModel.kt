@@ -36,6 +36,7 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
     init {
         viewModelScope.launch {
             getMyShippingAddress()
+
         }
     }
 
@@ -60,10 +61,16 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
     }
 
     private fun reloadShippingAddressAfterActive(id: String) {
-        _shippingAddresses.value = _shippingAddresses.value.mapIndexed { i, item ->
-            item.copy(isSelected = id == item.id)
+        val updatedList = _shippingAddresses.value.map { item ->
+            if (item.id == id) {
+                item.copy(isSelected = true)
+            } else {
+                item.copy(isSelected = false)
+            }
         }
+        _shippingAddresses.value = updatedList
     }
+
 
     suspend fun getAddress(country: String) {
         try {
@@ -91,7 +98,7 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
         val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
         val response = shippingAddressRepository.deleteShippingAddress(
             token = "Bear $getToken",
-           id
+            id
         )
         return response
     }
@@ -102,5 +109,19 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
         val response =
             shippingAddressRepository.updateShippingAddress("Bear $getToken", shippingAddress)
         return response
+    }
+
+    fun getCurrentShippingAddress(): ShippingAddress {
+        return _shippingAddresses.value.find { it.isSelected }
+            ?: ShippingAddress(
+                "1",
+                "1",
+                "Unknown",
+                "Unknown",
+                "Unknown",
+                "Unknown",
+                "Unknown",
+                true
+            )
     }
 }

@@ -27,8 +27,6 @@ class FavoriteViewModel @Inject constructor(
         get() = favoriteRepository.favoriteProducts
 
     init {
-        val sharedPreferences = favoriteRepository.getSharedPreferences()
-        val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "")
         getFavorites()
 
     }

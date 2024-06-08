@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
+    implementation( libs.accompanist.systemuicontroller)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.navigation.compose)

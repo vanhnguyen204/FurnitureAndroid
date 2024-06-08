@@ -60,5 +60,4 @@ class PaymentViewModel @Inject constructor(private val paymentRepository: Paymen
             _payments.emit(list)
         }
     }
-
 }

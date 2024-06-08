@@ -48,6 +48,8 @@ import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.viewmodel.CartViewModel
 import com.example.furniture.ui.screens.cart.components.CartItem
 import com.example.furniture.ui.theme.AppTheme
+import com.example.furniture.utils.NavigationUtils
+import com.google.gson.Gson
 
 @Composable
 fun CartScreen(
@@ -95,56 +97,56 @@ fun CartScreen(
             }
         }
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = "", onValueChange = {},
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(45.dp)
-                        .shadow(10.dp, shape = RoundedCornerShape(20.dp)
-                            , spotColor = Color.Gray),
-                    placeholder = {
-                        Text(
-                            text = "Enter your promo code", style = TextStyle(
-                                color = Color.Gray
-                            )
-                        )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-
-                    trailingIcon = {
-                        Button(
-                            onClick = { /*TODO*/ },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Black
-                            ),
-                            modifier = Modifier.fillMaxHeight()
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.arrow_right),
-                                contentDescription = "icon",
-                                modifier = Modifier.size(15.dp)
-                            )
-                        }
-                    }
-                )
-
-            }
-            Spacer(modifier = Modifier.height(20.dp))
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 10.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                TextField(
+//                    value = "", onValueChange = {},
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .height(45.dp)
+//                        .shadow(10.dp, shape = RoundedCornerShape(20.dp)
+//                            , spotColor = Color.Gray),
+//                    placeholder = {
+//                        Text(
+//                            text = "Enter your promo code", style = TextStyle(
+//                                color = Color.Gray
+//                            )
+//                        )
+//                    },
+//                    colors = TextFieldDefaults.colors(
+//                        focusedContainerColor = Color.White,
+//                        unfocusedContainerColor = Color.White,
+//                        focusedIndicatorColor = Color.Transparent,
+//                        unfocusedIndicatorColor = Color.Transparent
+//
+//                    ),
+//                    shape = RoundedCornerShape(10.dp),
+//
+//                    trailingIcon = {
+//                        Button(
+//                            onClick = { /*TODO*/ },
+//                            shape = RoundedCornerShape(10.dp),
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = Color.Black
+//                            ),
+//                            modifier = Modifier.fillMaxHeight()
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.arrow_right),
+//                                contentDescription = "icon",
+//                                modifier = Modifier.size(15.dp)
+//                            )
+//                        }
+//                    }
+//                )
+//
+//            }
+//            Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,7 +166,9 @@ fun CartScreen(
             Spacer(modifier = Modifier.height(20.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = {
+                          navController.navigate(NavigationUtils.checkout)
+                }, colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
                 ), shape = RoundedCornerShape(10.dp)
             ) {

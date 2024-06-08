@@ -6,18 +6,21 @@ import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.repository.AuthRepositoryImpl
 import com.example.furniture.data.repository.CartRepositoryImpl
 import com.example.furniture.data.repository.FavoriteRepositoryImpl
+import com.example.furniture.data.repository.InvoiceRepositoryImpl
 import com.example.furniture.data.repository.PaymentRepositoryImpl
 import com.example.furniture.data.repository.ProductRepositoryImpl
 import com.example.furniture.data.repository.ShippingAddressRepositoryImpl
 import com.example.furniture.domain.repository.AuthRepository
 import com.example.furniture.domain.repository.CartRepository
 import com.example.furniture.domain.repository.FavoriteRepository
+import com.example.furniture.domain.repository.InvoiceRepository
 import com.example.furniture.domain.repository.PaymentRepository
 import com.example.furniture.domain.repository.ProductRepository
 import com.example.furniture.domain.repository.ShippingAddressRepository
 import com.example.furniture.services.AuthService
 import com.example.furniture.services.CartService
 import com.example.furniture.services.FavoriteService
+import com.example.furniture.services.InvoiceService
 import com.example.furniture.services.PaymentService
 import com.example.furniture.services.ProductService
 import com.example.furniture.services.ShippingAddressService
@@ -142,5 +145,24 @@ object NetworkModule {
         sharedPreferences: SharedPreferences
     ): CartRepository {
         return CartRepositoryImpl(cartService, sharedPreferences)
+    }
+
+    //INVOICE
+
+    @Provides
+    @Singleton
+    fun provideInvoiceService(
+        retrofit: Retrofit
+    ): InvoiceService {
+        return retrofit.create(InvoiceService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInvoiceRepository(
+        invoiceService: InvoiceService,
+        sharedPreferences: SharedPreferences
+    ): InvoiceRepository {
+        return InvoiceRepositoryImpl(invoiceService, sharedPreferences)
     }
 }

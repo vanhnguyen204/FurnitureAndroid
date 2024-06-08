@@ -14,6 +14,9 @@ object NavigationUtils {
     const val payment = "PAYMENT_SCREEN"
     const val paymentManagement = "PAYMENT_MANAGEMENT_SCREEN"
     const val cart  = "CART_SCREEN"
+    const val checkout  = "CHECK_OUT_SCREEN"
+    const val donePurchase  = "DONE_PURCHASE_SCREEN"
+
 
 
 }
