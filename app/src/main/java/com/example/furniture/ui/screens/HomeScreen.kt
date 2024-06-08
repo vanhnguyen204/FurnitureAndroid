@@ -32,6 +32,7 @@ import com.example.furniture.components.Header
 import com.example.furniture.components.ListProduct
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.data.viewmodel.ProductViewModel
+import com.example.furniture.utils.NavigationUtils
 
 @Composable
 fun HomeScreen(navHostController: NavHostController, productViewModel: ProductViewModel = hiltViewModel<ProductViewModel>()) {
@@ -64,7 +65,9 @@ fun HomeScreen(navHostController: NavHostController, productViewModel: ProductVi
             sizeIconLeft = 30.dp,
             sizeIconRight = 27.dp,
             iconLeftPress = { /*TODO*/ },
-            iconRightPress = {},
+            iconRightPress = {
+                  navHostController.navigate(NavigationUtils.cart)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)

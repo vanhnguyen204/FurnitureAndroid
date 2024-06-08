@@ -287,13 +287,16 @@ fun FooterDetails(isFavorite: Boolean, onMarkPress: () -> Unit, onAddToCartPress
 
 @Composable
 fun UpAndDown(value: Int, onUpPress: () -> Unit, onDownPress: () -> Unit) {
+    val rounded = 8.dp
+    val size = 13.dp
+    val padding = 10.dp
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
-                .padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
+
+                .clip(RoundedCornerShape(rounded))
                 .background(AppTheme.appColors.appGray)
-                .padding(5.dp)
+                .padding(padding)
                 .clickable {
                     onUpPress()
                 }
@@ -301,7 +304,7 @@ fun UpAndDown(value: Int, onUpPress: () -> Unit, onDownPress: () -> Unit) {
             Image(
                 painter = painterResource(id = R.drawable.plus_child),
                 contentDescription = "Plus",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(size)
             )
 
 
@@ -315,10 +318,10 @@ fun UpAndDown(value: Int, onUpPress: () -> Unit, onDownPress: () -> Unit) {
         )
         Box(
             modifier = Modifier
-                .padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
+
+                .clip(RoundedCornerShape(rounded))
                 .background(AppTheme.appColors.appGray)
-                .padding(5.dp)
+                .padding(padding)
                 .clickable {
                     onDownPress()
                 }
@@ -326,7 +329,7 @@ fun UpAndDown(value: Int, onUpPress: () -> Unit, onDownPress: () -> Unit) {
             Image(
                 painter = painterResource(id = R.drawable.minus),
                 contentDescription = "Minus",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(size)
             )
         }
     }

@@ -1,20 +1,22 @@
 package com.example.furniture.data.model.response
 
 import com.google.gson.annotations.SerializedName
-
-open class Product(
+data class Cart(
     @SerializedName("_id")
     val id: String,
     @SerializedName("name")
-     val name: String,
+    val name: String,
     @SerializedName("price")
-     val price: Int,
+    val price: Int,
     @SerializedName("image")
-     val image: String,
+    val image: String,
     @SerializedName("description")
-     val description: String,
+    val description: String,
     @SerializedName("type")
-     val type: String,
+    val type: String,
     @SerializedName("userId")
-     val userId: String,
+    val userId: String,
+    @SerializedName("quantity")
+    val quantity: Int
 )
+

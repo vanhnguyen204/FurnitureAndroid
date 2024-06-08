@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -69,10 +71,15 @@ fun Header(
                 contentDescription = "Icon left header"
             )
         } else {
-            Text(
-                text = "", style = TextStyle(
-                    fontSize = 30.sp
-                )
+            Image(
+                modifier = Modifier
+                    .size(sizeIconRight ?: 30.dp)
+                    .clickable {
+                        iconRightPress()
+                    },
+                painter = painterResource(id = R.drawable.cart),
+                contentDescription = "Icon left header",
+                colorFilter = ColorFilter.tint(Color.Transparent)
             )
         }
     }

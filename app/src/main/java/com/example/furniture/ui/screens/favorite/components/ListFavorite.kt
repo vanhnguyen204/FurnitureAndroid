@@ -32,28 +32,37 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.furniture.R
 import com.example.furniture.data.model.response.Product
+import com.example.furniture.data.viewmodel.CartViewModel
 import com.example.furniture.data.viewmodel.FavoriteViewModel
+import com.example.furniture.services.RequestCartCreate
 import com.example.furniture.ui.theme.AppTheme
+import com.example.furniture.utils.NavigationUtils
 import com.example.furniture.utils.RetrofitUtils
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListFavorite(data: List<Product>, setProductId: (productId: String) -> Unit) {
+fun ListFavorite(
+    data: List<Product>,
+    setProductId: (productId: String) -> Unit,
+    cartViewModel: CartViewModel,
+    navController: NavController
+) {
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(10.dp),
 
         ) {
         itemsIndexed(data) { index: Int, item: Product ->
             FavoriteItem(index = index, item = item, setProductId = {
                 setProductId(it)
-            })
+            }, cartViewModel = cartViewModel, navController = navController)
         }
     }
 }
@@ -63,7 +72,9 @@ fun FavoriteItem(
     item: Product,
     index: Int,
     setProductId: (productId: String) -> Unit,
-    favoriteViewModel: FavoriteViewModel = hiltViewModel<FavoriteViewModel>()
+    favoriteViewModel: FavoriteViewModel = hiltViewModel<FavoriteViewModel>(),
+    cartViewModel: CartViewModel,
+    navController: NavController
 ) {
 
     ConstraintLayout(
@@ -127,6 +138,19 @@ fun FavoriteItem(
                         .clip(RoundedCornerShape(10.dp))
                         .background(AppTheme.appColors.appGray)
                         .padding(8.dp)
+                        .clickable {
+                            cartViewModel.viewModelScope.launch {
+                                val res = cartViewModel.addSingleProductToCart(
+                                    RequestCartCreate(
+                                        item.id,
+                                        1
+                                    )
+                                )
+                                if (res) {
+                                    navController.navigate(NavigationUtils.cart)
+                                }
+                            }
+                        }
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.shopping_bag),

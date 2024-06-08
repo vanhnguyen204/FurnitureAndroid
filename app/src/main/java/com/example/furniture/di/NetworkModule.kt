@@ -2,17 +2,21 @@ package com.example.furniture.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.repository.AuthRepositoryImpl
+import com.example.furniture.data.repository.CartRepositoryImpl
 import com.example.furniture.data.repository.FavoriteRepositoryImpl
 import com.example.furniture.data.repository.PaymentRepositoryImpl
 import com.example.furniture.data.repository.ProductRepositoryImpl
 import com.example.furniture.data.repository.ShippingAddressRepositoryImpl
 import com.example.furniture.domain.repository.AuthRepository
+import com.example.furniture.domain.repository.CartRepository
 import com.example.furniture.domain.repository.FavoriteRepository
 import com.example.furniture.domain.repository.PaymentRepository
 import com.example.furniture.domain.repository.ProductRepository
 import com.example.furniture.domain.repository.ShippingAddressRepository
 import com.example.furniture.services.AuthService
+import com.example.furniture.services.CartService
 import com.example.furniture.services.FavoriteService
 import com.example.furniture.services.PaymentService
 import com.example.furniture.services.ProductService
@@ -120,5 +124,23 @@ object NetworkModule {
         sharedPreferences: SharedPreferences
     ): PaymentRepository {
         return PaymentRepositoryImpl(sharedPreferences,paymentService)
+    }
+    //CART
+
+    @Provides
+    @Singleton
+    fun provideCartService(
+        retrofit: Retrofit
+    ): CartService{
+        return retrofit.create(CartService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(
+        cartService: CartService,
+        sharedPreferences: SharedPreferences
+    ): CartRepository {
+        return CartRepositoryImpl(cartService, sharedPreferences)
     }
 }

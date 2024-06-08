@@ -92,7 +92,7 @@ fun NestedBottomTab(navController: NavHostController) {
 
         }
         composable(NavigationUtils.favorite) {
-            FavoriteScreen()
+            FavoriteScreen(navController = navController)
         }
         composable(NavigationUtils.notification) {
             NotificationScreen()
