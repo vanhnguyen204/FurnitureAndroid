@@ -31,10 +31,10 @@ import com.example.furniture.utils.NavigationUtils
 @Composable
 fun ProfileScreen(navHostController: NavHostController) {
 //    val user by authViewModel.user.observeAsState()  authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
-    val feat1 = ProfileItemFeatureProps(name = "My orders", "Already have 10 orders",){
-
+    val feat1 = ProfileItemFeatureProps(name = "My orders", "Already have 10 orders") {
+        navHostController.navigate(NavigationUtils.myOrders)
     }
-    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders"){
+    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders") {
         navHostController.navigate(NavigationUtils.shippingAddress)
     }
     val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Already have 10 payments") {

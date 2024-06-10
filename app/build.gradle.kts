@@ -74,6 +74,9 @@ dependencies {
 
     implementation( libs.accompanist.systemuicontroller)
 
+    //implement to using websocket
+    implementation(libs.okhttp)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.navigation.compose)

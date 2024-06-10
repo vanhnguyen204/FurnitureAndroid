@@ -1,5 +1,7 @@
 package com.example.furniture.ui.navigators
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,6 +44,8 @@ import com.example.furniture.ui.screens.HomeScreen
 import com.example.furniture.ui.screens.NotificationScreen
 import com.example.furniture.ui.screens.cart.CartScreen
 import com.example.furniture.ui.screens.checkout.Checkout
+import com.example.furniture.ui.screens.invoice_details.InvoiceDetails
+import com.example.furniture.ui.screens.my_orders.MyOrder
 import com.example.furniture.ui.screens.payment.Payment
 import com.example.furniture.ui.screens.payment_management.PaymentManagement
 import com.example.furniture.ui.screens.shipping_address_management.ManageShippingAddress
@@ -83,6 +87,7 @@ fun BottomTab(navController: NavHostController = rememberNavController()) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NestedBottomTab(navController: NavHostController) {
     NavHost(
@@ -157,6 +162,15 @@ fun NestedBottomTab(navController: NavHostController) {
         }
         composable(route = NavigationUtils.donePurchase) {
             DonePurchase(navController = navController)
+        }
+        composable(route = NavigationUtils.myOrders) {
+            MyOrder(navController = navController)
+        }
+        composable(route = NavigationUtils.invoiceDetails +"/{invoiceId}",
+            arguments = listOf(navArgument("invoiceId") {type = NavType.StringType})
+            ){ backStackEntry ->
+           val invoiceId = backStackEntry.arguments?.getString("invoiceId") ?: ""
+            InvoiceDetails(invoiceId = invoiceId, navController = navController)
         }
     }
 }

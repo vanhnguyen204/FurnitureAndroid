@@ -25,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +86,33 @@ fun Checkout(
     val delivery = PriceType("Delivery: ", 5)
     val totalPrice = PriceType("Total: ", order.price + 5)
     val prices = listOf(order, delivery, totalPrice)
+    val currentPayment = payments.find {
+        it.isSelected
+    } ?: Payment(
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        0,
+        "Unknown",
+        true,
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        )
+    val currentShippingAddress = shippingAddress.find { it.isSelected } ?: ShippingAddress(
+        "1",
+        "1",
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        true
+    )
+    var currentDeliveryMethod by remember {
+        mutableStateOf("fast")
+    }
     LaunchedEffect(Unit) {
         shippingAddressViewModel.getMyShippingAddress()
         paymentViewModel.getMyPayment()
@@ -113,39 +143,17 @@ fun Checkout(
             )
             Spacer(modifier = Modifier.height(20.dp))
             ShippingItemCheckout(
-                item = shippingAddress.find { it.isSelected } ?: ShippingAddress(
-                    "1",
-                    "1",
-                    "Unknown",
-                    "Unknown",
-                    "Unknown",
-                    "Unknown",
-                    "Unknown",
-                    true
-                ),
+                item = currentShippingAddress,
                 navController = navController
             )
 
             Spacer(modifier = Modifier.height(30.dp))
-            PaymentItemCheckOut(payment = payments.find {
-                it.isSelected
-            } ?: Payment(
-                "Unknown",
-                "Unknown",
-                "Unknown",
-                "Unknown",
-                0,
-                "Unknown",
-                true,
-                "Unknown",
-                "Unknown",
-                "Unknown",
-
-                ),
+            PaymentItemCheckOut(payment = currentPayment,
                 navController = navController)
             Spacer(modifier = Modifier.height(30.dp))
-            DeliveryMethod {
 
+            DeliveryMethod {
+                currentDeliveryMethod = it.type
             }
             Spacer(modifier = Modifier.height(30.dp))
             LazyColumn {
@@ -183,10 +191,10 @@ fun Checkout(
                 invoiceViewModel.viewModelScope.launch {
                     val isCreated = invoiceViewModel.createInvoice(
                         RequestInvoice(
-                            200,
-                            paymentType = "vcb",
-                            shippingAddress = "abc",
-                            delivery = "fast",
+                            totalPrice = totalPrice.price,
+                            paymentType = currentPayment.type,
+                            shippingAddress = concatShippingAddress(currentShippingAddress),
+                            delivery = currentDeliveryMethod,
                             data = cart
                         )
                     )
@@ -215,6 +223,9 @@ fun Checkout(
     }
 }
 
+fun concatShippingAddress(i: ShippingAddress): String {
+    return i.addressDetail +", "+i.district + ", "+i.city + ", "+i.country
+}
 fun calculateTotalPrice(list: List<Cart>): Int {
     var total = 0;
     list.forEach { item ->
