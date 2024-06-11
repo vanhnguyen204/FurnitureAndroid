@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Funirute">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-07T03:02:13.461277Z">
+        <DropdownSelection timestamp="2024-06-10T17:30:23.689566Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/nguyenvietanh/.android/avd/Pixel_5_API_34.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/nguyenvietanh/.android/avd/Pixel_4_API_33.avd" />
             </handle>
           </Target>
         </DropdownSelection>

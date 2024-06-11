@@ -35,11 +35,11 @@ fun DialogConfirm(
     visible: Boolean,
     title: String,
     message: String,
-    titleColor: Color = Color.Red,
-    messageColor: Color = Color.White,
+    titleColor: Color = Color.Black,
+    messageColor: Color = Color.Black,
     buttonCancelColor: Color = Color.Gray,
-    buttonConfirmColor: Color = Color.Red,
-    backgroundColor: Color = AppTheme.appColors.appBrown,
+    buttonConfirmColor: Color = Color.Black,
+    backgroundColor: Color = Color.White,
     onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -86,7 +86,6 @@ fun DialogConfirm(
                             )
                         )
                     }
-
                    Row(modifier = Modifier.fillMaxWidth()) {
                        Button(
                            modifier = Modifier
@@ -98,7 +97,7 @@ fun DialogConfirm(
 
                                )
                        ) {
-                           Text(text = "Huỷ")
+                           Text(text = "Cancel")
                        }
                        Spacer(modifier = Modifier.width(10.dp))
                        Button(
@@ -112,7 +111,7 @@ fun DialogConfirm(
 
                                )
                        ) {
-                           Text(text = "Xác nhận")
+                           Text(text = "Confirm")
                        }
                    }
                 }

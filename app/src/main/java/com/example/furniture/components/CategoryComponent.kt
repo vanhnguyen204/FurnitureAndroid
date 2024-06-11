@@ -31,18 +31,19 @@ import com.example.furniture.ui.theme.AppTheme
 
 data class Item(
     val title: String,
-    val icon: Int
+    val icon: Int,
+    val value: String,
 )
 
 @Composable
-fun CategoryComponent() {
+fun CategoryComponent(onItemSelected: (i: Item) -> Unit) {
     val itemCategories = listOf(
-        Item("Popular", R.drawable.star),
-        Item("Chair", R.drawable.chair),
-        Item("Table", R.drawable.side_stable),
-        Item("ArmChair", R.drawable.armchair),
-        Item("Bed", R.drawable.bed),
-        Item("Lamp", R.drawable.bulb),
+        Item("Popular", R.drawable.star, "popular"),
+        Item("Chair", R.drawable.chair, "chair"),
+        Item("Table", R.drawable.side_stable, "table"),
+        Item("ArmChair", R.drawable.armchair, "armChair"),
+        Item("Bed", R.drawable.bed, "bed"),
+        Item("Lamp", R.drawable.bulb, "lamp"),
     )
     var isSelected by remember {
         mutableStateOf(0)
@@ -55,17 +56,13 @@ fun CategoryComponent() {
                 isSelected = isSelected == index,
                 onItemSelected = {
                     isSelected = index
+                    onItemSelected(it)
                 })
         }
     }
 }
-
-fun handleSelected() {
-
-}
-
 @Composable
-fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: () -> Unit) {
+fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: (i: Item) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -81,7 +78,7 @@ fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: ()
                 .clip(RoundedCornerShape(15.dp))
                 .padding(12.dp)
                 .clickable {
-                    onItemSelected()
+                    onItemSelected(item)
                 }
         ) {
             Image(
@@ -103,6 +100,6 @@ fun ItemCategory(item: Item, index: Int, isSelected: Boolean, onItemSelected: ()
 @Composable
 fun CatePreview() {
     AppTheme {
-        CategoryComponent()
+
     }
 }

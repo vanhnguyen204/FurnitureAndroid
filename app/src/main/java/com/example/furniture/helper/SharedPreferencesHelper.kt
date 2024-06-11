@@ -15,4 +15,9 @@ class SharedPreferencesHelper(context: Context) {
     fun getDataLocalStorage(key: String, defaultValue: String): String? {
         return sharedPreferences.getString(key, defaultValue)
     }
+    fun removeDataLocalStorage(key: String) {
+        val editor = sharedPreferences.edit()
+        editor.remove(key)
+        editor.apply()
+    }
 }

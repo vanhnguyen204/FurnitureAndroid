@@ -53,10 +53,15 @@ fun Header(
             )
 
         } else {
-            Text(
-                text = "", style = TextStyle(
-                    fontSize = 30.sp
-                )
+            Image(
+                modifier = Modifier
+                    .size(sizeIconRight ?: 30.dp)
+                    .clickable {
+
+                    },
+                painter = painterResource(id = R.drawable.cart),
+                contentDescription = "Icon left header",
+                colorFilter = ColorFilter.tint(Color.Transparent)
             )
         }
         contentCenter()
@@ -75,10 +80,9 @@ fun Header(
                 modifier = Modifier
                     .size(sizeIconRight ?: 30.dp)
                     .clickable {
-                        iconRightPress()
                     },
                 painter = painterResource(id = R.drawable.cart),
-                contentDescription = "Icon left header",
+                contentDescription = "Icon right header",
                 colorFilter = ColorFilter.tint(Color.Transparent)
             )
         }
@@ -103,7 +107,7 @@ fun HeaderPreview() {
             iconRightPress = {},
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+
         )
     }
 }

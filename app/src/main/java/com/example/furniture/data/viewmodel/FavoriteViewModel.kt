@@ -13,6 +13,7 @@ import com.example.furniture.domain.repository.FavoriteRepository
 import com.example.furniture.helper.Console
 import com.example.furniture.helper.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -23,8 +24,10 @@ class FavoriteViewModel @Inject constructor(
     private val favoriteRepository: FavoriteRepository,
 
     ) : ViewModel() {
-    val favoriteProducts: StateFlow<List<Product>>
-        get() = favoriteRepository.favoriteProducts
+
+
+    private val _favoriteProducts = MutableStateFlow<List<Product>>(emptyList())
+    val favoriteProducts : StateFlow<List<Product>> get() = _favoriteProducts
 
     init {
         getFavorites()
@@ -36,7 +39,8 @@ class FavoriteViewModel @Inject constructor(
         val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "")
 
         viewModelScope.launch {
-            favoriteRepository.getFavorites(("Bear $getToken"))
+          val res =  favoriteRepository.getFavorites(("Bear $getToken"))
+            _favoriteProducts.emit(res)
         }
     }
 

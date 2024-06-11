@@ -1,6 +1,7 @@
 package com.example.furniture.ui.screens.favorite
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,8 +17,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -36,8 +36,6 @@ import com.example.furniture.constant.Storage
 import com.example.furniture.data.model.request.RequestBodyFavorite
 import com.example.furniture.data.viewmodel.CartViewModel
 import com.example.furniture.data.viewmodel.FavoriteViewModel
-import com.example.furniture.helper.Console
-import com.example.furniture.helper.ConsoleLog
 import com.example.furniture.helper.SharedPreferencesHelper
 import com.example.furniture.ui.screens.favorite.components.ListFavorite
 import com.example.furniture.ui.theme.AppTheme
@@ -70,12 +68,13 @@ fun FavoriteScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+
         Column {
             Header(
                 iconLeft = R.drawable.search_2,
                 iconRight = R.drawable.cart,
                 contentCenter = {
-                    Text(text = "Favorites")
+                    Text(text = "Favorites",style = AppTheme.appTypography.titleHeaderStyle)
 
                 },
                 sizeIconLeft = 30.dp,
@@ -88,6 +87,15 @@ fun FavoriteScreen(
                     .fillMaxWidth()
                     .padding(10.dp)
             )
+
+
+            if (favoriteProducts.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "You haven't liked any products yet.", textAlign = TextAlign.Center)
+                }
+                return
+            }
+
             ListFavorite(data = favoriteProducts, setProductId = {
                 productId = it
             }, cartViewModel, navController = navController)
@@ -114,7 +122,7 @@ fun FavoriteScreen(
             },
             title = "Notification",
             message = messageAddAllSuccessOrFailed,
-            titleColor = Color.White,
+            titleColor = Color.Black,
             messageColor = Color.Black
         )
         Button(

@@ -12,6 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -19,30 +24,54 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.furniture.R
+import com.example.furniture.components.DialogConfirm
 import com.example.furniture.components.Header
+import com.example.furniture.data.viewmodel.AuthViewModel
 import com.example.furniture.ui.screens.profile.components.ProfileItemFeature
 import com.example.furniture.ui.screens.profile.components.ProfileItemFeatureProps
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
 
 @Composable
-fun ProfileScreen(navHostController: NavHostController) {
-//    val user by authViewModel.user.observeAsState()  authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
-    val feat1 = ProfileItemFeatureProps(name = "My orders", "Already have 10 orders") {
+fun ProfileScreen(
+    navHostController: NavHostController,
+    signOut: () -> Unit,
+    authViewModel: AuthViewModel
+) {
+    val userInfor by authViewModel.userInfor.collectAsState()
+    val feat1 = ProfileItemFeatureProps(name = "My orders", "See orders detail") {
         navHostController.navigate(NavigationUtils.myOrders)
     }
-    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Already have 10 orders") {
+    val feat2 = ProfileItemFeatureProps(name = "Shipping Address", "Manage your shipping address") {
         navHostController.navigate(NavigationUtils.shippingAddress)
     }
-    val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Already have 10 payments") {
+    val feat3 = ProfileItemFeatureProps(name = "Payment Method", "Let's manage payment") {
         navHostController.navigate(NavigationUtils.payment)
     }
-    val feat4 = ProfileItemFeatureProps(name = "My reviews", "Already have 10 orders", {})
-    val feat5 = ProfileItemFeatureProps(name = "Setting", "Already have 10 orders", {})
+    val feat4 = ProfileItemFeatureProps(name = "My reviews", "My reviews") {
+        navHostController.navigate(NavigationUtils.myReviews)
+    }
+    val feat5 = ProfileItemFeatureProps(name = "Setting", "Password, Information") {
+        navHostController.navigate(NavigationUtils.setting)
+    }
     val feats = listOf(feat1, feat2, feat3, feat4, feat5)
+    var confirmLogout by remember {
+        mutableStateOf(false)
+    }
+    DialogConfirm(
+        visible = confirmLogout,
+        title = "Notification",
+        message = "Are you sure you want to logout?",
+        onCancel = {
+            confirmLogout = false
+        }) {
+        signOut()
+        confirmLogout = false
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +79,7 @@ fun ProfileScreen(navHostController: NavHostController) {
             .padding(10.dp)
     ) {
         Header(
-            iconLeft = R.drawable.search_2,
+            iconLeft = null,
             iconRight = R.drawable.log_out,
             contentCenter = {
                 Text(
@@ -64,7 +93,10 @@ fun ProfileScreen(navHostController: NavHostController) {
             sizeIconLeft = 30.dp,
             sizeIconRight = 28.dp,
             iconLeftPress = { /*TODO*/ },
-            iconRightPress = { /*TODO*/ },
+            iconRightPress = {
+               confirmLogout = true
+                Unit
+            },
             modifier = Modifier
                 .fillMaxWidth()
 
@@ -90,12 +122,12 @@ fun ProfileScreen(navHostController: NavHostController) {
             )
             Column(modifier = Modifier.padding(start = 10.dp)) {
                 Text(
-                    text = "Nguyễn Việt Anh", style = AppTheme.appTypography.h1.copy(
+                    text = userInfor.name, style = AppTheme.appTypography.h1.copy(
                         fontSize = 20.sp
                     )
                 )
                 Text(
-                    text = "nguyenvietem@gmail.com",
+                    text = userInfor.email,
                     modifier = Modifier.padding(top = 6.dp),
                     style = AppTheme.appTypography.body2.copy(color = Color(0xFF808080))
                 )
@@ -115,6 +147,6 @@ fun ProfileScreen(navHostController: NavHostController) {
 fun ProfileScreenPreview() {
     AppTheme {
         val navHostController = rememberNavController()
-        ProfileScreen(navHostController)
+
     }
 }

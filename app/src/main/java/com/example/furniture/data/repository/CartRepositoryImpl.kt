@@ -50,4 +50,14 @@ class CartRepositoryImpl @Inject constructor(
             return MessageResponse("ERROR ADD ALL TO CART", 400)
         }
     }
+
+    override suspend fun removeFromCart(token: String,productId: String): MessageResponse {
+        try {
+            val res = cartService.removeFromCart(token,productId)
+            return res.body()!!
+        }catch (e: Exception) {
+            ConsoleLog("ERROR REMOVE CART", e.message.toString())
+            return MessageResponse("ERROR REMOVE CART", 500)
+        }
+    }
 }

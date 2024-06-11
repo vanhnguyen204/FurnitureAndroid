@@ -38,8 +38,8 @@ fun DialogMessage(
     onClose: () -> Unit,
     title: String,
     message: String,
-    titleColor: Color,
-    messageColor: Color,
+    titleColor: Color?,
+    messageColor: Color?,
 
     ) {
     if (visibility) {
@@ -57,7 +57,7 @@ fun DialogMessage(
                 modifier = Modifier
                     .padding(10.dp)
                     .clip(RoundedCornerShape(25.dp))
-                    .background(Color(0xFF937350))
+                    .background(Color.White)
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -68,7 +68,7 @@ fun DialogMessage(
                 ) {
                     Text(
                         text = title, style = TextStyle(
-                            color = titleColor,
+                            color = titleColor ?: Color.Black,
                             fontSize = 18.sp
                         )
                     )
@@ -81,7 +81,7 @@ fun DialogMessage(
                 ) {
                     Text(
                         text = message, style = TextStyle(
-                            color = messageColor,
+                            color = messageColor ?: Color.Black,
                             fontSize = 14.sp
                         )
                     )
@@ -91,8 +91,7 @@ fun DialogMessage(
                     modifier = Modifier.padding(top = 20.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick =onClose, colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-
+                        containerColor = Color.Black,
                         )
                 ) {
                     Text(text = "Đóng")

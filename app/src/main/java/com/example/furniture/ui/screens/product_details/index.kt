@@ -21,9 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -43,20 +46,30 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.furniture.R
 import com.example.furniture.components.DialogConfirm
+import com.example.furniture.components.DialogMessage
 import com.example.furniture.constant.Storage
 import com.example.furniture.data.model.request.RequestBodyFavorite
 import com.example.furniture.data.model.response.Product
+import com.example.furniture.data.viewmodel.CartViewModel
 import com.example.furniture.data.viewmodel.FavoriteViewModel
+import com.example.furniture.data.viewmodel.NavArgsRatingDetail
 import com.example.furniture.data.viewmodel.ProductViewModel
+import com.example.furniture.data.viewmodel.RatingViewModel
+import com.example.furniture.data.viewmodel.ShareDataBetweenScreenViewModel
 import com.example.furniture.helper.SharedPreferencesHelper
+import com.example.furniture.services.RequestCartCreate
 import com.example.furniture.ui.screens.product_details.components.LeftBarSelector
 import com.example.furniture.ui.screens.product_details.components.ViewPager
 import com.example.furniture.ui.screens.product_details.components.ViewPagerDotsIndicator
 import com.example.furniture.ui.theme.AppTheme
+import com.example.furniture.utils.NavigationUtils
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,14 +77,21 @@ fun ProductDetails(
     navHostController: NavHostController,
     idProductItem: String?,
     favoriteViewModel: FavoriteViewModel = hiltViewModel<FavoriteViewModel>(),
-    productViewModel: ProductViewModel = hiltViewModel<ProductViewModel>()
+    productViewModel: ProductViewModel = hiltViewModel<ProductViewModel>(),
+    ratingViewModel: RatingViewModel = hiltViewModel<RatingViewModel>(),
+    cartViewModel: CartViewModel = hiltViewModel<CartViewModel>(),
+    shareDataBetweenScreenViewModel: ShareDataBetweenScreenViewModel = ShareDataBetweenScreenViewModel()
 ) {
     val context = LocalContext.current
     val isVisibleDialogConfirm by favoriteViewModel.isConfirmRemove.observeAsState()
     val productDetails by productViewModel.productDetails.observeAsState()
+    val overallRating by ratingViewModel.overallRatingProduct.collectAsState()
     val isProductFavorite by favoriteViewModel.isProductFavorite.observeAsState()
     val getToken =
         SharedPreferencesHelper(context).getDataLocalStorage(Storage.TOKEN.toString(), "") ?: ""
+    LaunchedEffect(key1 = idProductItem) {
+        ratingViewModel.getOverallRating(idProductItem ?: "")
+    }
     LaunchedEffect(key1 = idProductItem) {
 
         favoriteViewModel.checkIsLike(
@@ -83,7 +103,9 @@ fun ProductDetails(
             productId = RequestBodyFavorite(idProductItem)
         )
     }
-
+    var isAddToCartSuccess by remember {
+        mutableStateOf(false)
+    }
 
     var value by remember {
         mutableIntStateOf(1)
@@ -182,7 +204,22 @@ fun ProductDetails(
                     })
                 }
                 Row(
-                    modifier = Modifier.padding(vertical = 15.dp),
+                    modifier = Modifier
+                        .padding(vertical = 15.dp)
+                        .clickable {
+                            val encodedImage =
+                                URLEncoder.encode(product.image, StandardCharsets.UTF_8.toString())
+                            val encodedName =
+                                URLEncoder.encode(product.name, StandardCharsets.UTF_8.toString())
+                            navHostController.navigate(NavigationUtils.ratingDetails + "/${idProductItem}/${encodedImage}/${encodedName}")
+                            shareDataBetweenScreenViewModel.setRatingDetailsArgs(
+                                NavArgsRatingDetail(
+                                    name = product.name,
+                                    productId = idProductItem ?: "",
+                                    image = product.image
+                                )
+                            )
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
@@ -191,7 +228,7 @@ fun ProductDetails(
                         modifier = Modifier.size(25.dp)
                     )
                     Text(
-                        text = "4.5", style = TextStyle(
+                        text = overallRating.averageRating.toString(), style = TextStyle(
                             fontSize = 18.sp,
                             fontWeight = FontWeight(700)
                         ),
@@ -199,7 +236,7 @@ fun ProductDetails(
                     )
 
                     Text(
-                        text = "(50 reviews)",
+                        text = "(${overallRating.reviews} reviews)",
                         style = AppTheme.appTypography.textProduct.copy(fontWeight = FontWeight(600))
                     )
                 }
@@ -215,23 +252,51 @@ fun ProductDetails(
         FooterDetails(
             isFavorite = isProductFavorite == true,
             onMarkPress = {
-                          if (isProductFavorite == true){
-                              favoriteViewModel.showDialogConfirm(true)
-                          }else{
-                              favoriteViewModel.createFavorite("Bear $getToken", RequestBodyFavorite(idProductItem!!))
-                          }
+                if (isProductFavorite == true) {
+                    favoriteViewModel.showDialogConfirm(true)
+                } else {
+                    favoriteViewModel.createFavorite(
+                        "Bear $getToken",
+                        RequestBodyFavorite(idProductItem!!)
+                    )
+                }
             },
-            onAddToCartPress = {})
-
+            onAddToCartPress = {
+                cartViewModel.viewModelScope.launch {
+                    val res = cartViewModel.addSingleProductToCart(
+                        RequestCartCreate(
+                            idProductItem ?: "",
+                            quantity = value
+                        )
+                    )
+                    if (res) {
+                        isAddToCartSuccess = true
+                    }
+                }
+            })
+        DialogMessage(
+            visibility = isAddToCartSuccess,
+            onClose = {
+                value = 1
+                isAddToCartSuccess = !isAddToCartSuccess
+            },
+            title = "Notification",
+            message = "Add to cart successfully!",
+            titleColor = Color.Black,
+            messageColor = Color.Black,
+        )
         DialogConfirm(
             visible = isVisibleDialogConfirm == true,
-            title = "Cảnh báo",
-            message = "Bạn có chắc muốn xoá sản phẩm này khỏi danh sách yêu thích không?",
+            title = "Warning",
+            message = "Are you sure you want to unlike product?",
             onCancel = {
                 favoriteViewModel.showDialogConfirm(false)
             },
             onConfirm = {
-                favoriteViewModel.removeFavorite("Bear $getToken", RequestBodyFavorite(idProductItem!!) )
+                favoriteViewModel.removeFavorite(
+                    "Bear $getToken",
+                    RequestBodyFavorite(idProductItem!!)
+                )
                 favoriteViewModel.toggleStatusFavorite()
             })
     }
@@ -246,20 +311,21 @@ fun FooterDetails(isFavorite: Boolean, onMarkPress: () -> Unit, onAddToCartPress
             .offset(x = 0.dp, y = 0.dp)
             .padding(horizontal = 10.dp)
     ) {
-        val color = if (isFavorite) Color.Cyan else Color.White
+        val color = if (isFavorite) Color.Red else Color.White
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(color)
+                .background(Color.Gray)
                 .padding(10.dp)
                 .clickable {
                     onMarkPress()
                 }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.bookmark),
+                painter = painterResource(id = R.drawable.icon_love),
                 contentDescription = "Book mark",
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
+                colorFilter = ColorFilter.tint(color)
 
             )
         }

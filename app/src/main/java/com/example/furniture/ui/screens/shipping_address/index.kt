@@ -48,10 +48,10 @@ fun ShippingAddressScreen(
     shippingAddressViewModel: ShippingAddressViewModel = hiltViewModel<ShippingAddressViewModel>()
 ) {
     val shippingAddress by shippingAddressViewModel.shippingAddresses.collectAsState()
-    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         shippingAddressViewModel.getMyShippingAddress()
     }
+
 
     Box(
         modifier = Modifier
@@ -77,27 +77,29 @@ fun ShippingAddressScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-//        if (shippingAddress?.data?.size == 0) {
-//            return Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center,
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//                Text(text = "Bạn chưa có địa chỉ nhận hàng nào.")
-//            }
-//        }
+            if (shippingAddress.isEmpty()) {
+                 Box(
+                   contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(text = "You haven't any shipping addresses.")
+                }
 
-            if (shippingAddress.isNotEmpty()) {
+            }else{
+
                 LazyColumn {
                     itemsIndexed(shippingAddress) { index, item ->
-                        ShippingAddressItem(item = item, index = index, shippingAddressViewModel, navHostController)
+                        ShippingAddressItem(
+                            item = item,
+                            index = index,
+                            shippingAddressViewModel,
+                            navHostController
+                        )
                     }
                 }
             }
 
-
         }
-
         SmallFloatingActionButton(onClick = {
             navHostController.navigate(NavigationUtils.shippingAddressManage + "/true/null")
         }, modifier = Modifier.offset()) {

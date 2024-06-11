@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,10 @@ fun ModalRating(
     val starSelected = remember { mutableStateListOf<Int>() }
     var comment by remember {
         mutableStateOf("")
+    }
+    LaunchedEffect (key1 = isVisible){
+        starSelected.clear()
+        comment = ""
     }
     if (isVisible) {
         Dialog(onDismissRequest = { }) {

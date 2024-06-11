@@ -9,8 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
 
 interface FavoriteRepository {
-    val favoriteProducts: StateFlow<List<Product>>
-    suspend fun getFavorites(token: String): Response<List<Product>>
+    suspend fun getFavorites(token: String):List<Product>
     fun getSharedPreferences(): SharedPreferences
     suspend fun removeFavorite(token: String, requestBodyFavorite: RequestBodyFavorite): Response<Product>
 

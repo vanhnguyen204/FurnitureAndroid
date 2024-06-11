@@ -17,16 +17,13 @@ class FavoriteRepositoryImpl @Inject constructor(
     private val favoriteService: FavoriteService,
     private val sharedPreferences: SharedPreferences
 ) : FavoriteRepository {
-    private val _favoriteProducts = MutableStateFlow<List<Product>>(emptyList())
-    override val favoriteProducts: StateFlow<List<Product>>
-        get() = _favoriteProducts
-
-    override suspend fun getFavorites(token: String): Response<List<Product>> {
-        val response = favoriteService.getFavorites(token)
-        if (response.isSuccessful && response.body() != null) {
-            _favoriteProducts.emit(response.body()!!)
-        }
-        return response
+    override suspend fun getFavorites(token: String): List<Product> {
+      try {
+          val response = favoriteService.getFavorites(token)
+         return response.body()!!
+      }catch (e: Exception) {
+          return emptyList()
+      }
     }
 
     override fun getSharedPreferences(): SharedPreferences {

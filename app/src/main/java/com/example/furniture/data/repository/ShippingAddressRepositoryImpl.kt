@@ -8,6 +8,7 @@ import com.example.furniture.data.model.response.MessageResponse
 import com.example.furniture.data.model.response.ShippingAddress
 import com.example.furniture.domain.repository.ShippingAddressRepository
 import com.example.furniture.helper.Console
+import com.example.furniture.helper.ConsoleLog
 import com.example.furniture.services.ShippingAddressService
 
 import javax.inject.Inject
@@ -25,8 +26,13 @@ class ShippingAddressRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMyShippingAddress(token: String): List<ShippingAddress> {
-        val response = shippingAddressService.getMyShippingAddress(token)
-        return response.body()!!
+       try {
+           val response = shippingAddressService.getMyShippingAddress(token)
+           return response.body()!!
+       }catch (e: Exception) {
+           ConsoleLog("ERROR GET MY SHIPPING ADDRESS", e.message.toString())
+           return emptyList()
+       }
     }
 
     override suspend fun activeShippingAddress(

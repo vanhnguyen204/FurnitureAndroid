@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -35,27 +36,30 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.furniture.R
-import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.model.response.Payment
 import com.example.furniture.data.model.response.ShippingAddress
+import com.example.furniture.data.viewmodel.AuthViewModel
+import com.example.furniture.data.viewmodel.CartViewModel
 import com.example.furniture.ui.screens.DonePurchase
 import com.example.furniture.ui.screens.favorite.FavoriteScreen
-import com.example.furniture.ui.screens.HomeScreen
-import com.example.furniture.ui.screens.NotificationScreen
+import com.example.furniture.ui.screens.home.HomeScreen
+import com.example.furniture.ui.screens.notification.NotificationScreen
 import com.example.furniture.ui.screens.cart.CartScreen
 import com.example.furniture.ui.screens.checkout.Checkout
 import com.example.furniture.ui.screens.invoice_details.InvoiceDetails
 import com.example.furniture.ui.screens.my_orders.MyOrder
+import com.example.furniture.ui.screens.my_reviews.MyReviews
 import com.example.furniture.ui.screens.payment.Payment
 import com.example.furniture.ui.screens.payment_management.PaymentManagement
 import com.example.furniture.ui.screens.shipping_address_management.ManageShippingAddress
 import com.example.furniture.ui.screens.product_details.ProductDetails
 import com.example.furniture.ui.screens.profile.ProfileScreen
+import com.example.furniture.ui.screens.rating_product_details.RatingProductDetails
+import com.example.furniture.ui.screens.setting.Setting
 import com.example.furniture.ui.screens.shipping_address.ShippingAddressScreen
 import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.NavigationUtils
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 data class TabBarItem(
     val title: String,
@@ -64,14 +68,20 @@ data class TabBarItem(
 )
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BottomTab(navController: NavHostController = rememberNavController()) {
+fun BottomTab(
+    cartViewModel: CartViewModel = hiltViewModel<CartViewModel>(),
+    navController: NavHostController = rememberNavController(),
+    signOut: () -> Unit
+) {
 
     val home = TabBarItem(NavigationUtils.homeScreen, R.drawable.home)
-    val favorite = TabBarItem(NavigationUtils.favorite, R.drawable.bookmark)
+    val favorite = TabBarItem(NavigationUtils.favorite, R.drawable.heart_bottom_bar)
     val notification = TabBarItem(NavigationUtils.notification, R.drawable.bell, 2)
     val profile = TabBarItem(NavigationUtils.profile, R.drawable.user)
     val tabBarItems = listOf(home, favorite, notification, profile)
+
     AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(modifier = Modifier.fillMaxSize(),
@@ -79,6 +89,8 @@ fun BottomTab(navController: NavHostController = rememberNavController()) {
                 Box(modifier = Modifier.padding(it)) {
                     NestedBottomTab(
                         navController = navController,
+                        cartViewModel,
+                        signOut = signOut
                     )
                 }
             }
@@ -89,7 +101,11 @@ fun BottomTab(navController: NavHostController = rememberNavController()) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NestedBottomTab(navController: NavHostController) {
+fun NestedBottomTab(
+    navController: NavHostController, cartViewModel: CartViewModel,
+    signOut: () -> Unit
+) {
+    val authViewModel: AuthViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = NavigationUtils.homeScreen,
@@ -107,7 +123,7 @@ fun NestedBottomTab(navController: NavHostController) {
             NotificationScreen()
         }
         composable(NavigationUtils.profile) {
-            ProfileScreen(navController)
+            ProfileScreen(navController, signOut, authViewModel = authViewModel)
         }
         composable(
             route = NavigationUtils.productDetails + "/{idProductItem}",
@@ -144,21 +160,25 @@ fun NestedBottomTab(navController: NavHostController) {
         }
         composable(route = NavigationUtils.paymentManagement + "/{isCreate}/{payment}",
             arguments = listOf(navArgument("isCreate") { type = NavType.BoolType },
-            navArgument("shippingAddress") {
-                type = NavType.StringType
-                nullable = true
-            }
-        )) { backStackEntry ->
+                navArgument("shippingAddress") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )) { backStackEntry ->
             val paymentJson = backStackEntry.arguments?.getString("payment")
             val payment = Gson().fromJson(paymentJson, Payment::class.java)
             val isCreate = backStackEntry.arguments?.getBoolean("isCreate")
-            PaymentManagement(navHostController = navController, payment = payment, isCreate = isCreate ?: true)
+            PaymentManagement(
+                navHostController = navController,
+                payment = payment,
+                isCreate = isCreate ?: true
+            )
         }
-        composable(route = NavigationUtils.cart){
-            CartScreen(navController = navController)
+        composable(route = NavigationUtils.cart) {
+            CartScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable(route = NavigationUtils.checkout) {
-            Checkout(navController = navController)
+            Checkout(navController = navController, cartViewModel = cartViewModel)
         }
         composable(route = NavigationUtils.donePurchase) {
             DonePurchase(navController = navController)
@@ -166,11 +186,36 @@ fun NestedBottomTab(navController: NavHostController) {
         composable(route = NavigationUtils.myOrders) {
             MyOrder(navController = navController)
         }
-        composable(route = NavigationUtils.invoiceDetails +"/{invoiceId}",
-            arguments = listOf(navArgument("invoiceId") {type = NavType.StringType})
-            ){ backStackEntry ->
-           val invoiceId = backStackEntry.arguments?.getString("invoiceId") ?: ""
+        composable(
+            route = NavigationUtils.invoiceDetails + "/{invoiceId}",
+            arguments = listOf(navArgument("invoiceId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val invoiceId = backStackEntry.arguments?.getString("invoiceId") ?: ""
             InvoiceDetails(invoiceId = invoiceId, navController = navController)
+        }
+        composable(route = NavigationUtils.myReviews) {
+            MyReviews(navController = navController)
+        }
+        composable(
+            route = NavigationUtils.ratingDetails + "/{productId}/{image}/{name}",
+            arguments = listOf(
+                navArgument("productId") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            val image = backStackEntry.arguments?.getString("image") ?: ""
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            RatingProductDetails(
+                navController = navController,
+                productId = productId,
+                imageProduct = image,
+                name = name
+            )
+        }
+        composable(route = NavigationUtils.setting) {
+            Setting(navController = navController, authViewModel = authViewModel)
         }
     }
 }
@@ -249,6 +294,6 @@ fun TabBarBadgeView(count: Int? = null) {
 @Composable
 fun BottomTabPreview() {
     AppTheme {
-        BottomTab()
+
     }
 }

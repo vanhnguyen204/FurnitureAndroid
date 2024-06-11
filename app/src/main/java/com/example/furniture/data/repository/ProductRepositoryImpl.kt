@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.furniture.data.model.request.RequestBodyFavorite
 import com.example.furniture.data.model.response.Product
 import com.example.furniture.domain.repository.ProductRepository
+import com.example.furniture.helper.ConsoleLog
 import com.example.furniture.helper.Resource
 import com.example.furniture.helper.getErrorResponse
 import com.example.furniture.services.ProductService
@@ -16,18 +17,16 @@ class ProductRepositoryImpl @Inject constructor(
     private val productService: ProductService,
 
     ) : ProductRepository {
-    private val _products = MutableStateFlow<List<Product>>(emptyList())
-    override val products: StateFlow<List<Product>>
-        get() = _products
 
-    override suspend fun getProducts(): Response<List<Product>> {
-        val response = productService.getProducts()
-        if (response.isSuccessful && response.body() != null) {
-            _products.emit(response.body()!!)
-        }else{
-            Log.e("ERROR GET PRODUCTS", "getProducts: " + response.message() )
+
+    override suspend fun getProducts():List<Product>{
+        try {
+            val res = productService.getProducts()
+            return res.body()!!
+        } catch (e: Exception) {
+            ConsoleLog("ERROR GET PRODUCT OF CATEGORY", e.message.toString())
+            return emptyList()
         }
-        return response
     }
 
     override suspend fun productDetails(
@@ -39,12 +38,34 @@ class ProductRepositoryImpl @Inject constructor(
             return if (response.isSuccessful && response.body() != null) {
                 Resource.Success(response.body())
 
-            }else{
+            } else {
                 Resource.ErrorRes(getErrorResponse(response.errorBody().toString()))
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             val error = e.message ?: "An error occurred"
-            return  Resource.Error(error)
+            return Resource.Error(error)
+        }
+    }
+
+    override suspend fun getProductOfCategory(
+        token: String,
+        category: String
+    ): List<Product> {
+        try {
+            val res = productService.getProductOfCategory(token, category)
+            return res.body()!!
+        } catch (e: Exception) {
+            ConsoleLog("ERROR GET PRODUCT OF CATEGORY", e.message.toString())
+            return emptyList()
+        }
+    }
+
+    override suspend fun searchProductByName(productName: String): List<Product> {
+        try {
+            val res = productService.searchProductByName(productName)
+            return res.body()!!
+        }catch (e: Exception) {
+            return emptyList()
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.furniture.utils
 object NavigationUtils {
     const val welcomeScreen: String = "WELCOME_SCREEN"
     const val login: String = "LOGIN_SCREEN"
+    const val register: String = "REGISTER_SCREEN"
     const val homeScreen: String = "HOME_SCREEN"
     const val favorite: String = "FAVORITE_SCREEN"
     const val notification: String = "NOTIFICATION_SCREEN"
@@ -18,7 +19,7 @@ object NavigationUtils {
     const val donePurchase  = "DONE_PURCHASE_SCREEN"
     const val myOrders  = "ORDERS_SCREEN"
     const val invoiceDetails  = "INVOICE_DETAILS_SCREEN"
-
-
-
+    const val myReviews  = "MY_REVIEWS_SCREEN"
+    const val ratingDetails = "RATING_DETAILS_SCREEN"
+    const val setting = "SETTING_SCREEN"
 }

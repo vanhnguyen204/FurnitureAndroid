@@ -45,6 +45,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.furniture.R
+import com.example.furniture.components.DialogMessage
 import com.example.furniture.components.Header
 import com.example.furniture.data.model.request.RequestInvoice
 import com.example.furniture.data.model.response.Cart
@@ -80,12 +81,10 @@ fun Checkout(
         color = Color(0xFFF2F2F2),
     )
     val shippingAddress by shippingAddressViewModel.shippingAddresses.collectAsState()
+    val totalPriceViewModel by cartViewModel.totalPrice.collectAsState()
     val payments by paymentViewModel.payments.collectAsState()
     val cart by cartViewModel.myCart.collectAsState()
-    val order = PriceType("Order:", calculateTotalPrice(cart))
-    val delivery = PriceType("Delivery: ", 5)
-    val totalPrice = PriceType("Total: ", order.price + 5)
-    val prices = listOf(order, delivery, totalPrice)
+
     val currentPayment = payments.find {
         it.isSelected
     } ?: Payment(
@@ -99,7 +98,7 @@ fun Checkout(
         "Unknown",
         "Unknown",
         "Unknown",
-        )
+    )
     val currentShippingAddress = shippingAddress.find { it.isSelected } ?: ShippingAddress(
         "1",
         "1",
@@ -110,14 +109,33 @@ fun Checkout(
         "Unknown",
         true
     )
+    var dialogCheckAddressAndPayment by remember {
+        mutableStateOf(false)
+    }
+    var messageError by remember {
+        mutableStateOf("")
+    }
     var currentDeliveryMethod by remember {
         mutableStateOf("fast")
     }
+    val order = PriceType("Order:", totalPriceViewModel)
+    val delivery = PriceType("Delivery: ", if (currentDeliveryMethod == "fast") 5 else 3)
+    val totalPrice = PriceType("Total: ", delivery.price + totalPriceViewModel)
+    val prices = listOf(order, delivery, totalPrice)
     LaunchedEffect(Unit) {
         shippingAddressViewModel.getMyShippingAddress()
         paymentViewModel.getMyPayment()
     }
-
+    DialogMessage(
+        visibility = dialogCheckAddressAndPayment,
+        onClose = {
+            dialogCheckAddressAndPayment = false
+        },
+        title = "Warning",
+        message = messageError,
+        titleColor = Color(0xFFFFCF21),
+        messageColor = Color.Black
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -148,8 +166,10 @@ fun Checkout(
             )
 
             Spacer(modifier = Modifier.height(30.dp))
-            PaymentItemCheckOut(payment = currentPayment,
-                navController = navController)
+            PaymentItemCheckOut(
+                payment = currentPayment,
+                navController = navController
+            )
             Spacer(modifier = Modifier.height(30.dp))
 
             DeliveryMethod {
@@ -188,20 +208,29 @@ fun Checkout(
                 containerColor = Color.Black
             ),
             onClick = {
-                invoiceViewModel.viewModelScope.launch {
-                    val isCreated = invoiceViewModel.createInvoice(
-                        RequestInvoice(
-                            totalPrice = totalPrice.price,
-                            paymentType = currentPayment.type,
-                            shippingAddress = concatShippingAddress(currentShippingAddress),
-                            delivery = currentDeliveryMethod,
-                            data = cart
+                if (currentShippingAddress.addressDetail == "Unknown") {
+                    dialogCheckAddressAndPayment = true
+                    messageError = "You must choose one shipping address."
+                }else if (currentPayment.bankName == "Unknown") {
+                    dialogCheckAddressAndPayment = true
+                    messageError = "You must choose one payment method."
+                }else{
+                    invoiceViewModel.viewModelScope.launch {
+                        val isCreated = invoiceViewModel.createInvoice(
+                            RequestInvoice(
+                                totalPrice = totalPrice.price,
+                                paymentType = currentPayment.type,
+                                shippingAddress = concatShippingAddress(currentShippingAddress),
+                                delivery = currentDeliveryMethod,
+                                data = cart
+                            )
                         )
-                    )
-                    if (isCreated) {
-                        navController.navigate(NavigationUtils.donePurchase)
+                        if (isCreated) {
+                            navController.navigate(NavigationUtils.donePurchase)
+                        }
                     }
                 }
+
 
             },
             modifier = Modifier
@@ -224,8 +253,9 @@ fun Checkout(
 }
 
 fun concatShippingAddress(i: ShippingAddress): String {
-    return i.addressDetail +", "+i.district + ", "+i.city + ", "+i.country
+    return i.addressDetail + ", " + i.district + ", " + i.city + ", " + i.country
 }
+
 fun calculateTotalPrice(list: List<Cart>): Int {
     var total = 0;
     list.forEach { item ->

@@ -30,7 +30,7 @@ fun ViewPagerDotsIndicator(
     ) {
         repeat(pageCount) { iteration ->
             val color =
-                if (currentPageIteration == iteration) Color.Black else Color.Gray
+                if (currentPageIteration == iteration) Color.Black else Color.White
             Box(
                 modifier = Modifier
                     .width(if (currentPageIteration == iteration) 50.dp else 20.dp)

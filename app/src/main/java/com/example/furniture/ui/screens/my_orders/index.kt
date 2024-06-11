@@ -52,9 +52,11 @@ fun MyOrder(
         }
     )
     val pages = listOf("Delivery", "Processing", "Canceled")
-    Column(modifier = Modifier
-        .background(Color(0xFFF2F2F2))
-        .padding(horizontal = 15.dp)) {
+    Column(
+        modifier = Modifier
+            .background(Color(0xFFF2F2F2))
+            .padding(horizontal = 15.dp, vertical = 10.dp)
+    ) {
         Header(
             iconLeft = R.drawable.left,
             iconRight = null,
@@ -71,8 +73,8 @@ fun MyOrder(
             modifier = Modifier.fillMaxWidth()
         )
         if (invoices.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(text = "You have not purchased any products yet. Come to the booth and buy something")
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "You have not purchased any products yet." + "\n" + "Come to the booth and buy something.")
             }
             return
         }

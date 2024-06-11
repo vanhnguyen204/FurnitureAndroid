@@ -19,26 +19,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.furniture.R
+import com.example.furniture.components.DialogConfirm
+import com.example.furniture.components.DialogMessage
 import com.example.furniture.components.Header
 import com.example.furniture.components.ModalRating
+import com.example.furniture.data.model.request.RequestBodyRating
+import com.example.furniture.data.model.response.Cart
 import com.example.furniture.data.viewmodel.InvoiceViewModel
+import com.example.furniture.data.viewmodel.RatingViewModel
 import com.example.furniture.ui.screens.invoice_details.components.InvoiceDetailsCart
 import com.example.furniture.ui.theme.AppTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun InvoiceDetails(
     invoiceId: String,
     navController: NavController,
-    invoiceViewModel: InvoiceViewModel = hiltViewModel<InvoiceViewModel>()
+    invoiceViewModel: InvoiceViewModel = hiltViewModel<InvoiceViewModel>(),
+    ratingViewModel: RatingViewModel = hiltViewModel<RatingViewModel>()
 ) {
     val invoiceDetails by invoiceViewModel.invoiceDetail.collectAsState()
     var visibleModalRating by remember {
         mutableStateOf(false)
     }
+    var getInforCarOnClick by remember {
+        mutableStateOf<Cart>(Cart("", "", 0, "", "", "", "", 0))
+    }
     LaunchedEffect(Unit) {
         invoiceViewModel.getInvoiceDetails(invoiceId)
+    }
+    var isCreateRatingSuccess by remember {
+        mutableStateOf(false)
     }
     Column(
         modifier = Modifier
@@ -46,10 +60,32 @@ fun InvoiceDetails(
             .padding(horizontal = 10.dp)
             .fillMaxSize()
     ) {
+        DialogMessage(
+            visibility = isCreateRatingSuccess,
+            onClose = {
+                      visibleModalRating =false
+                isCreateRatingSuccess = false
+            },
+            title = "Notification",
+            message = "Rating & reviews success!",
+            titleColor = Color.White,
+            messageColor = Color.Black
+        )
         ModalRating(isVisible = visibleModalRating, onCancel = {
             visibleModalRating = !visibleModalRating
         }) {
-
+            ratingViewModel.viewModelScope.launch {
+                val res = ratingViewModel.createRating(
+                    RequestBodyRating(
+                        getInforCarOnClick.id,
+                        it.star,
+                        it.comment
+                    )
+                )
+                if (res) {
+                    isCreateRatingSuccess = !isCreateRatingSuccess
+                }
+            }
         }
         Header(
             iconLeft = R.drawable.left,
@@ -69,8 +105,9 @@ fun InvoiceDetails(
 
         LazyColumn {
             items(invoiceDetails) {
-                InvoiceDetailsCart(item = it) {
-
+                InvoiceDetailsCart(item = it) { cart ->
+                    getInforCarOnClick = cart
+                    visibleModalRating = !visibleModalRating
                 }
             }
         }

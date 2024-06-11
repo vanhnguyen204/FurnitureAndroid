@@ -9,6 +9,7 @@ import com.example.furniture.services.RequestCartCreate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,33 +19,80 @@ class CartViewModel @Inject constructor(private val cartRepository: CartReposito
     private val _myCart = MutableStateFlow<List<Cart>>(emptyList())
     val myCart: StateFlow<List<Cart>> get() = _myCart
 
+    private val _totalPrice = MutableStateFlow(0)
+    val totalPrice: StateFlow<Int> get() = _totalPrice
+    private var initialCartState: List<Cart> = emptyList()
+
     init {
         viewModelScope.launch {
             getMyCart()
         }
     }
 
-    suspend fun getMyCart() {
+    private  fun getToken(): String {
         val sharedPreferences = cartRepository.getSharedPreferences()
-        val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
+        return sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
+    }
 
-        val res = cartRepository.getMyCart("Bear $getToken")
+    private  fun calculateTotalPrice(carts: List<Cart>): Int {
+        return carts.sumOf { it.quantity * it.price }
+    }
 
+    suspend fun getMyCart() {
+        val token = getToken()
+        val res = cartRepository.getMyCart("Bear $token")
+        initialCartState = res
         _myCart.emit(res)
+        _totalPrice.emit(calculateTotalPrice(res))
     }
 
     suspend fun addAllToCart(productIds: List<String>): Boolean {
-        val sharedPreferences = cartRepository.getSharedPreferences()
-        val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
-
-        val res = cartRepository.addAllToCart("Bear $getToken", productIds)
+        val token = getToken()
+        val res = cartRepository.addAllToCart("Bear $token", productIds)
         return res.status == 200
     }
 
     suspend fun addSingleProductToCart(requestCartCreate: RequestCartCreate): Boolean {
-        val sharedPreferences = cartRepository.getSharedPreferences()
-        val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
-        val res = cartRepository.addSingleProductToCart("Bear $getToken", requestCartCreate)
+        val token = getToken()
+        val res = cartRepository.addSingleProductToCart("Bear $token", requestCartCreate)
         return res.status == 200 || res.status == 201
+    }
+
+    suspend fun handleIncreaseQuantity(productId: String) {
+        updateCartQuantity(productId) { it + 1 }
+    }
+
+    suspend fun handleReduceQuantity(productId: String) {
+        updateCartQuantity(productId) { it - 1 }
+    }
+
+    private suspend fun updateCartQuantity(productId: String, updateQuantity: (Int) -> Int) {
+        _myCart.update { currentList ->
+            currentList.map { cart ->
+                if (cart.id == productId) {
+                    cart.copy(quantity = updateQuantity(cart.quantity))
+                } else {
+                    cart
+                }
+            }
+        }
+        _totalPrice.emit(calculateTotalPrice(_myCart.value))
+    }
+
+    suspend fun resetCartToInitialState() {
+        _myCart.emit(initialCartState)
+        _totalPrice.emit(calculateTotalPrice(initialCartState))
+    }
+
+    suspend fun removeFromCart(productId: String) : Boolean {
+        val token = getToken()
+        val res = cartRepository.removeFromCart("Bear $token", productId)
+        if (res.status == 200) {
+            val updatedCart = _myCart.value.filter { it.id != productId }
+            _myCart.emit(updatedCart)
+            val updatedTotalPrice = updatedCart.sumOf { it.price * it.quantity }
+            _totalPrice.emit(updatedTotalPrice)
+        }
+        return res.status == 200
     }
 }

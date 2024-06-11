@@ -9,6 +9,7 @@ import com.example.furniture.data.repository.FavoriteRepositoryImpl
 import com.example.furniture.data.repository.InvoiceRepositoryImpl
 import com.example.furniture.data.repository.PaymentRepositoryImpl
 import com.example.furniture.data.repository.ProductRepositoryImpl
+import com.example.furniture.data.repository.RatingRepositoryImpl
 import com.example.furniture.data.repository.ShippingAddressRepositoryImpl
 import com.example.furniture.domain.repository.AuthRepository
 import com.example.furniture.domain.repository.CartRepository
@@ -16,6 +17,7 @@ import com.example.furniture.domain.repository.FavoriteRepository
 import com.example.furniture.domain.repository.InvoiceRepository
 import com.example.furniture.domain.repository.PaymentRepository
 import com.example.furniture.domain.repository.ProductRepository
+import com.example.furniture.domain.repository.RatingRepository
 import com.example.furniture.domain.repository.ShippingAddressRepository
 import com.example.furniture.services.AuthService
 import com.example.furniture.services.CartService
@@ -23,6 +25,7 @@ import com.example.furniture.services.FavoriteService
 import com.example.furniture.services.InvoiceService
 import com.example.furniture.services.PaymentService
 import com.example.furniture.services.ProductService
+import com.example.furniture.services.RatingService
 import com.example.furniture.services.ShippingAddressService
 import com.example.furniture.utils.RetrofitUtils
 import dagger.Module
@@ -89,8 +92,8 @@ object NetworkModule {
     }
     @Provides
     @Singleton
-    fun provideAuthRepository(authService: AuthService): AuthRepository {
-        return AuthRepositoryImpl(authService)
+    fun provideAuthRepository(authService: AuthService, sharedPreferences: SharedPreferences): AuthRepository {
+        return AuthRepositoryImpl(authService, sharedPreferences)
     }
     //SHIPPING ADDRESS
 
@@ -164,5 +167,24 @@ object NetworkModule {
         sharedPreferences: SharedPreferences
     ): InvoiceRepository {
         return InvoiceRepositoryImpl(invoiceService, sharedPreferences)
+    }
+
+    //rating
+
+    @Provides
+    @Singleton
+    fun provideRatingService(
+        retrofit: Retrofit
+    ): RatingService {
+        return retrofit.create(RatingService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRatingRepository(
+        ratingService: RatingService,
+        sharedPreferences: SharedPreferences
+    ): RatingRepository {
+        return RatingRepositoryImpl(ratingService, sharedPreferences)
     }
 }

@@ -30,6 +30,7 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
     private val _shippingAddresses = MutableStateFlow<List<ShippingAddress>>(emptyList())
     val shippingAddresses: StateFlow<List<ShippingAddress>>
         get() = _shippingAddresses
+
     private val _addresses = MutableStateFlow<List<String>>(emptyList())
     val addresses: StateFlow<List<String>> get() = _addresses
 
@@ -44,7 +45,7 @@ class ShippingAddressViewModel @Inject constructor(private val shippingAddressRe
         val sharedPreferences = shippingAddressRepository.getSharedPreferences()
         val getToken = sharedPreferences.getString(Storage.TOKEN.toString(), "") ?: ""
         val response = shippingAddressRepository.getMyShippingAddress("Bear $getToken")
-        _shippingAddresses.value = response
+        _shippingAddresses.emit(response)
 
     }
 

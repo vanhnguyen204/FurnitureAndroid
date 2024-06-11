@@ -2,6 +2,7 @@ package com.example.furniture.ui.screens.cart.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,7 @@ import com.example.furniture.ui.theme.AppTheme
 import com.example.furniture.utils.RetrofitUtils
 
 @Composable
-fun CartItem(item: Cart) {
+fun CartItem(item: Cart, onRemove: (id: String) -> Unit, onIncrease: (productId: String) ->Unit,  onReduce: (productId: String) ->Unit, ) {
     var quantity by remember {
         mutableIntStateOf(item.quantity)
     }
@@ -77,14 +78,20 @@ fun CartItem(item: Cart) {
                         painter = painterResource(id = R.drawable.close),
                         contentDescription = "Remove out of cart",
                         modifier = Modifier.size(25.dp)
+                            .clickable {
+                                onRemove(item.id)
+                            }
                     )
                 }
                 Text(text = "$ ${item.price}", style = AppTheme.appTypography.priceProduct)
 
             }
-            UpAndDown(value = quantity, onUpPress = { quantity = ++quantity }) {
-                if (quantity > 1) {
-                    --quantity
+            UpAndDown(value = item.quantity, onUpPress = {
+                onIncrease(item.id)
+                }) {
+                if (item.quantity > 1) {
+                    onReduce(item.id)
+
                 }
             }
         }

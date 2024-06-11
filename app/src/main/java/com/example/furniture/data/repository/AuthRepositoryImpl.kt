@@ -1,17 +1,25 @@
 package com.example.furniture.data.repository
 
+import android.content.SharedPreferences
 import com.example.furniture.data.model.response.ErrorResponse
+import com.example.furniture.data.model.response.MessageResponse
 import com.example.furniture.data.model.response.User
 import com.example.furniture.domain.repository.AuthRepository
+import com.example.furniture.helper.ConsoleLog
 import com.example.furniture.helper.Resource
 import com.example.furniture.services.AuthService
+import com.example.furniture.services.UserInforRequest
+import com.example.furniture.services.UserInforResponse
 import com.google.gson.Gson
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
-
+private val sharedPreferences: SharedPreferences
     ) : AuthRepository {
+    override fun getSharedPreferences(): SharedPreferences {
+        return sharedPreferences
+    }
 
 
     override suspend fun authLogin(user: User): Resource<User> {
@@ -32,27 +40,35 @@ class AuthRepositoryImpl @Inject constructor(
 
         }
     }
-//    private val _user = MutableStateFlow<Resource<User>>(Resource.Error("Initial State"))
-//    override val user: StateFlow<Resource<User>> get() = _user
-//
-//    override suspend fun authLogin(user: User): Resource<User> {
-//        val response = authService.authLogin(user)
-//        Log.e("VALUE", "authLogin: "  + response.body())
-//         try {
-//
-//            if (response.isSuccessful && response.body() != null) {
-//                _user.emit( Resource.Success(response.body()!!))
-//              return  Resource.Success(response.body()!!)
-//            } else {
-//                val errorResponse = response.errorBody()?.string()?.let {
-//                    Gson().fromJson(it, ErrorResponse::class.java)
-//                }
-//                _user.emit( Resource.ErrorRes(errorResponse ?: ErrorResponse(500, "Unknown", "Unknown error")))
-//
-//             return   Resource.ErrorRes(errorResponse ?: ErrorResponse(500, "Unknown", "Unknown error"))
-//            }
-//        } catch (e: Exception) {
-//          return  Resource.Error(e.message ?: "An error occurred")
-//        }
-//    }
+
+    override suspend fun authRegister(user: User): MessageResponse {
+        try {
+            val res = authService.authRegister(user)
+            return res.body()!!
+        }catch (e: Exception) {
+            ConsoleLog("ERROR REGISTER", e.message.toString())
+            return MessageResponse("ERROR REGISTER", 500)
+        }
+    }
+
+    override suspend fun getInforUser(token: String): UserInforResponse {
+        try {
+            val res = authService.getInforUser(token)
+            return res.body()!!
+        }catch (e: Exception) {
+            return UserInforResponse("UnKnown", "UnKnown")
+        }
+    }
+
+    override suspend fun updateInforUser(
+        token: String,
+        userInforRequest: UserInforRequest
+    ): MessageResponse {
+        try {
+            val res = authService.updateInforUser(token, userInforRequest)
+            return res.body()!!
+        }catch (e: Exception) {
+            return MessageResponse("ERROR UPDATE", 500)
+        }
+    }
 }

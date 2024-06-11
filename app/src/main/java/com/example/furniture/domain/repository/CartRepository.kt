@@ -15,4 +15,5 @@ interface CartRepository {
     ): MessageResponse
 
     suspend fun addAllToCart(token: String, productIds: List<String>): MessageResponse
+    suspend fun removeFromCart(token: String,productId: String): MessageResponse
 }

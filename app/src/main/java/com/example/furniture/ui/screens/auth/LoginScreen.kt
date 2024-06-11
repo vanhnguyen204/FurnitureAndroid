@@ -168,6 +168,7 @@ fun LoginScreen(
 
 
         ) {
+
             Text(
                 text = "Email",
                 style = TextStyle(
@@ -304,7 +305,9 @@ fun LoginScreen(
                 }
             }
             Button(
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = {
+                          navHostController.navigate(NavigationUtils.register)
+                }, colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
                 )
             ) {

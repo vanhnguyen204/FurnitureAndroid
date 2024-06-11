@@ -42,6 +42,7 @@ fun Payment(
     LaunchedEffect(Unit) {
         paymentViewModel.getMyPayment()
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -65,11 +66,24 @@ fun Payment(
                 iconRightPress = { /*TODO*/ },
                 modifier = Modifier.fillMaxWidth()
             )
-            LazyColumn {
-                itemsIndexed(payments) { index: Int, item: Payment ->
-                    PaymentItem(item = item, index = index, navController = navHostController, paymentViewModel)
+            if (payments.isEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(text = "You haven't any payments method.")
+                }
+
+            }else{
+                LazyColumn {
+                    itemsIndexed(payments) { index: Int, item: Payment ->
+                        PaymentItem(item = item, index = index, navController = navHostController, paymentViewModel)
+                    }
                 }
             }
+
+
+
         }
         SmallFloatingActionButton(onClick = {
             navHostController.navigate(NavigationUtils.paymentManagement + "/true/null")
